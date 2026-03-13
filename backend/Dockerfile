@@ -1,13 +1,13 @@
-FROM node:18-alpine
+FROM node:20-slim
 
 WORKDIR /app
 
-# instalar dependências necessárias para compilar better-sqlite3
-RUN apk add --no-cache python3 make g++
+# dependências necessárias para better-sqlite3
+RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 
-RUN npm install --legacy-peer-deps
+RUN npm install
 
 COPY . .
 

@@ -1,0 +1,3069 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeilãoPro — Sistema de Credenciamento</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #f8f8f6;
+      --surface: #ffffff;
+      --surface-2: #f2f2ef;
+      --border: #e4e4e0;
+      --border-strong: #c8c8c2;
+      --text: #1a1a18;
+      --text-2: #6b6b65;
+      --text-3: #9b9b93;
+      --accent: #1a1a18;
+      --accent-light: #f0f0ec;
+      --green: #2d6a4f;
+      --green-bg: #f0faf5;
+      --red: #c0392b;
+      --red-bg: #fdf2f0;
+      --yellow: #b7791f;
+      --yellow-bg: #fefce8;
+      --blue: #2563eb;
+      --blue-bg: #eff6ff;
+      --radius: 8px;
+      --shadow: 0 1px 3px rgba(0, 0, 0, .08);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, .08);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, .10);
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5
+    }
+
+    /* AUTH */
+    #auth-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .auth-card {
+      width: 380px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: var(--shadow-lg)
+    }
+
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 32px
+    }
+
+    .auth-logo .lm {
+      width: 44px;
+      height: 44px;
+      background: var(--text);
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px
+    }
+
+    .auth-logo .lm svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2
+    }
+
+    .auth-logo h1 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.3px
+    }
+
+    .auth-logo p {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 2px
+    }
+
+    .field {
+      margin-bottom: 16px
+    }
+
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-bottom: 6px
+    }
+
+    .field input {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .15s
+    }
+
+    .field input:focus {
+      border-color: var(--text)
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 10px;
+      background: var(--text);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 14px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity .15s
+    }
+
+    .btn-primary:hover {
+      opacity: .85
+    }
+
+    .btn-primary:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .auth-error {
+      background: var(--red-bg);
+      border: 1px solid #f5c6c2;
+      color: var(--red);
+      padding: 10px 12px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none
+    }
+
+    /* APP */
+    #app {
+      display: none;
+      height: 100vh;
+      flex-direction: row
+    }
+
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column
+    }
+
+    .sidebar-header {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .sidebar-logo .lm {
+      width: 30px;
+      height: 30px;
+      background: var(--text);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .sidebar-logo .lm svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 2.2
+    }
+
+    .sidebar-logo span {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -.2px
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 10px;
+      overflow-y: auto
+    }
+
+    .nav-section {
+      margin-bottom: 4px
+    }
+
+    .nav-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 8px 8px 4px
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 13.5px;
+      font-weight: 400;
+      transition: all .12s;
+      user-select: none
+    }
+
+    .nav-item svg {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8
+    }
+
+    .nav-item:hover {
+      background: var(--surface-2);
+      color: var(--text)
+    }
+
+    .nav-item.active {
+      background: var(--accent-light);
+      color: var(--text);
+      font-weight: 500
+    }
+
+    .nav-item.locked {
+      opacity: .4;
+      cursor: not-allowed;
+      pointer-events: none
+    }
+
+    .nav-item.danger {
+      color: var(--red)
+    }
+
+    .nav-item.danger:hover {
+      background: var(--red-bg)
+    }
+
+    .sidebar-footer {
+      padding: 12px 10px;
+      border-top: 1px solid var(--border)
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      background: var(--surface-2)
+    }
+
+    .user-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      flex-shrink: 0
+    }
+
+    .user-name {
+      font-size: 12.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: var(--text-3)
+    }
+
+    .badge-role {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--text-2);
+      white-space: nowrap
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .topbar {
+      padding: 0 24px;
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      flex-shrink: 0
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.2px
+    }
+
+    .topbar-sub {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 1px
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px
+    }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all .12s;
+      border: 1px solid transparent
+    }
+
+    .btn svg {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2
+    }
+
+    .btn:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .btn-solid {
+      background: var(--text);
+      color: #fff;
+      border-color: var(--text)
+    }
+
+    .btn-solid:hover:not(:disabled) {
+      opacity: .85
+    }
+
+    .btn-outline {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border-strong)
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--surface-2)
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-2);
+      border-color: transparent
+    }
+
+    .btn-ghost:hover:not(:disabled) {
+      background: var(--surface-2);
+      color: var(--text)
+    }
+
+    .btn-sm {
+      padding: 5px 10px;
+      font-size: 12px
+    }
+
+    .btn-danger {
+      background: var(--red-bg);
+      color: var(--red);
+      border-color: #f5c6c2
+    }
+
+    .btn-green {
+      background: var(--green-bg);
+      color: var(--green);
+      border-color: #c6e8d8
+    }
+
+    /* MATRICULAS EXPANSIVEIS */
+    .m-details { display: none; margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+    .m-details.active { display: block; }
+    .m-toggle-btn { 
+      background: var(--surface); 
+      border: 1px solid var(--border); 
+      color: var(--text-2); 
+      padding: 4px 8px; 
+      border-radius: 4px; 
+      font-size: 11px; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      gap: 4px;
+      transition: all 0.2s;
+    }
+    .m-toggle-btn:hover { background: var(--surface-2); color: var(--text); }
+    .m-toggle-btn.active svg { transform: rotate(180deg); }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--text-3);
+      margin-top: 2px
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 18px
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-3);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .5px
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 600;
+      letter-spacing: -1px;
+      margin-top: 4px
+    }
+
+    .stat-delta {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-top: 2px
+    }
+
+    .stat-delta.up {
+      color: var(--green)
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    thead th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2)
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background .1s
+    }
+
+    tbody tr:last-child {
+      border-bottom: none
+    }
+
+    tbody tr:hover {
+      background: var(--surface-2)
+    }
+
+    tbody td {
+      padding: 12px 14px;
+      font-size: 13px;
+      vertical-align: middle
+    }
+
+    .mono {
+      font-family: 'DM Mono', monospace;
+      font-size: 12px
+    }
+
+    /* STATUS */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500
+    }
+
+    .status::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor
+    }
+
+    .status-pending {
+      background: var(--yellow-bg);
+      color: var(--yellow)
+    }
+
+    .status-approved {
+      background: var(--green-bg);
+      color: var(--green)
+    }
+
+    .status-rejected {
+      background: var(--red-bg);
+      color: var(--red)
+    }
+
+    .status-processing {
+      background: var(--blue-bg);
+      color: var(--blue)
+    }
+
+    /* UPLOAD */
+    .upload-zone {
+      border: 2px dashed var(--border-strong);
+      border-radius: 10px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .15s;
+      background: var(--surface)
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--text);
+      background: var(--accent-light)
+    }
+
+    .upload-icon {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto 12px;
+      opacity: .4
+    }
+
+    .upload-icon svg {
+      width: 44px;
+      height: 44px;
+      stroke: var(--text);
+      fill: none;
+      stroke-width: 1.5
+    }
+
+    .upload-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px
+    }
+
+    .upload-sub {
+      font-size: 12px;
+      color: var(--text-3)
+    }
+
+    #file-input {
+      display: none
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-top: 8px
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--text);
+      border-radius: 2px;
+      transition: width .3s
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .35);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .modal-overlay.open {
+      display: flex
+    }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 28px;
+      width: 500px;
+      max-width: 95vw;
+      box-shadow: var(--shadow-lg);
+      max-height: 90vh;
+      overflow-y: auto
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      color: var(--text-3)
+    }
+
+    .modal-close svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2
+    }
+
+    /* FORM */
+    .form-row {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 14px
+    }
+
+    .form-row.col2 {
+      grid-template-columns: 1fr 1fr
+    }
+
+    .field-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-bottom: 5px
+    }
+
+    .field-group input,
+    .field-group select,
+    .field-group textarea {
+      width: 100%;
+      padding: 8px 11px;
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      font-size: 13.5px;
+      font-family: inherit;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s
+    }
+
+    .field-group input:focus,
+    .field-group select:focus,
+    .field-group textarea:focus {
+      border-color: var(--text)
+    }
+
+    .field-group textarea {
+      resize: vertical;
+      min-height: 80px
+    }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      background: var(--text);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .25s;
+      max-width: 340px
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    #toast.success {
+      background: var(--green)
+    }
+
+    #toast.error {
+      background: var(--red)
+    }
+
+    /* MISC */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-3)
+    }
+
+    .empty-state svg {
+      width: 40px;
+      height: 40px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-width: 1.5;
+      margin: 0 auto 12px;
+      display: block
+    }
+
+    .empty-state p {
+      font-size: 13px
+    }
+
+    .permission-denied {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 60px;
+      text-align: center;
+      color: var(--text-3)
+    }
+
+    .permission-denied svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 16px;
+      stroke: var(--text-3);
+      fill: none;
+      stroke-width: 1.5
+    }
+
+    .permission-denied h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-2);
+      margin-bottom: 8px
+    }
+
+    .tabs {
+      display: flex;
+      gap: 2px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px
+    }
+
+    .tab {
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text-3);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .12s
+    }
+
+    .tab:hover {
+      color: var(--text)
+    }
+
+    .tab.active {
+      color: var(--text);
+      border-bottom-color: var(--text)
+    }
+
+    .page {
+      display: none;
+      height: 100%
+    }
+
+    .page.active {
+      display: block
+    }
+
+    .tag {
+      font-size: 11px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: var(--text-2)
+    }
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .user-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .user-card-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-2);
+      flex-shrink: 0
+    }
+
+    .user-card-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .user-card-name {
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    .user-card-email {
+      font-size: 11px;
+      color: var(--text-3)
+    }
+
+    .permission-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px
+    }
+
+    .chip {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--text-2);
+      border: 1px solid var(--border)
+    }
+
+    .chip.active {
+      background: var(--green-bg);
+      color: var(--green);
+      border-color: #c6e8d8
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, .3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      display: inline-block
+    }
+
+    .spinner-dark {
+      border-color: rgba(0, 0, 0, .15);
+      border-top-color: var(--text)
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .resumo-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 200px;
+      overflow-y: auto
+    }
+
+    .resumo-secao {
+      margin-bottom: 12px
+    }
+
+    .resumo-secao:last-child {
+      margin-bottom: 0
+    }
+
+    .resumo-secao-titulo {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .resumo-secao-titulo::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    .resumo-secao-corpo {
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.65;
+      white-space: pre-wrap
+    }
+
+    .uuid-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 3px
+    }
+
+    .uuid-text {
+      font-family: 'DM Mono', monospace;
+      font-size: 10px;
+      color: var(--text-3);
+      letter-spacing: .3px
+    }
+
+    .uuid-copy {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px;
+      color: var(--text-3);
+      line-height: 0;
+      transition: color .15s
+    }
+
+    .uuid-copy:hover {
+      color: var(--text)
+    }
+
+    .modal-bloco {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px
+    }
+
+    .modal-bloco-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 10px
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 3px
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- AUTH -->
+  <div id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="lm"><svg viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg></div>
+        <h1>LeilãoPro</h1>
+        <p>Sistema de Credenciamento</p>
+      </div>
+      <div class="auth-error" id="auth-error">E-mail ou senha incorretos.</div>
+      <div class="field"><label>E-mail</label><input type="email" id="login-email" placeholder="seu@email.com"
+          autocomplete="username" /></div>
+      <div class="field"><label>Senha</label><input type="password" id="login-password" placeholder="••••••••"
+          autocomplete="current-password" /></div>
+      <button class="btn-primary" id="btn-login" onclick="doLogin()">Entrar</button>
+      <div style="text-align:center;margin-top:14px">
+        <button onclick="showResetScreen()"
+          style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer;text-decoration:underline">Esqueci
+          minha senha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESET SENHA SCREEN -->
+  <div id="reset-screen" style="display:none;min-height:100vh;align-items:center;justify-content:center">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="lm"><svg viewBox="0 0 24 24">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+          </svg></div>
+        <h1>Recuperar Senha</h1>
+        <p id="reset-step-label">Passo 1: Solicitar código</p>
+      </div>
+      <div id="reset-msg" class="auth-error" style="display:none"></div>
+      <!-- Step 1: email -->
+      <div id="reset-step1">
+        <div class="field"><label>Seu E-mail</label><input type="email" id="reset-email" placeholder="seu@email.com" />
+        </div>
+        <button class="btn-primary" onclick="requestReset()">Solicitar Código</button>
+        <div style="text-align:center;margin-top:12px"><button onclick="hideResetScreen()"
+            style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer;text-decoration:underline">Voltar
+            ao login</button></div>
+      </div>
+      <!-- Step 2: código + nova senha -->
+      <div id="reset-step2" style="display:none">
+        <div
+          style="background:var(--green-bg);border:1px solid #c6e8d8;border-radius:8px;padding:10px 12px;font-size:12.5px;color:var(--green);margin-bottom:14px">
+          Código gerado! Solicite ao administrador o código de 6 dígitos. Ele expira em 60 minutos.</div>
+        <div class="field"><label>Código recebido</label><input type="text" id="reset-code" placeholder="000000"
+            maxlength="6" style="letter-spacing:4px;font-size:18px;text-align:center" /></div>
+        <div class="field"><label>Nova Senha</label><input type="password" id="reset-newpass"
+            placeholder="Mínimo 6 caracteres" /></div>
+        <button class="btn-primary" onclick="confirmReset()">Alterar Senha</button>
+        <div style="text-align:center;margin-top:12px"><button onclick="hideResetScreen()"
+            style="background:none;border:none;color:var(--text-3);font-size:12px;cursor:pointer;text-decoration:underline">Voltar
+            ao login</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-logo">
+          <div class="lm"><svg viewBox="0 0 24 24">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5" />
+              <path d="M2 12l10 5 10-5" />
+            </svg></div>
+          <span>LeilãoPro</span>
+        </div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-label">Principal</div>
+          <div class="nav-item active" id="nav-inicio" onclick="navigate('inicio')">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Início
+          </div>
+          <div class="nav-item" id="nav-credenciamento" onclick="navigate('credenciamento')">
+            <svg viewBox="0 0 24 24">
+              <rect x="2" y="3" width="20" height="14" rx="2" />
+              <path d="M8 21h8M12 17v4" />
+            </svg>Credenciamento
+          </div>
+          <div class="nav-item" id="nav-contratos" onclick="navigate('contratos')">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>Contratos
+          </div>
+          <div class="nav-item" id="nav-avaliacao" onclick="navigate('avaliacao')">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+              <polyline points="10 9 9 9 8 9" />
+            </svg>Gerador de Docs
+          </div>
+        </div>
+        <div class="nav-section" id="nav-admin-section" style="display:none">
+          <div class="nav-section-label">Administração</div>
+          <div class="nav-item" id="nav-usuarios" onclick="navigate('usuarios')">
+            <svg viewBox="0 0 24 24">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>Usuários
+          </div>
+          <div class="nav-item" id="nav-leiloeiros" onclick="navigate('leiloeiros')">
+            <svg viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>Leiloeiros
+          </div>
+        </div>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="sidebar-avatar">--</div>
+          <div style="flex:1;min-width:0">
+            <div class="user-name" id="sidebar-name">—</div>
+            <div class="user-role" id="sidebar-role">—</div>
+          </div>
+        </div>
+        <div class="nav-item danger" style="margin-top:6px" onclick="doLogout()">
+          <svg viewBox="0 0 24 24">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>Sair
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="topbar-title" id="page-title">Credenciamento</div>
+          <div class="topbar-sub" id="page-sub">Análise e gestão de editais</div>
+        </div>
+        <div class="topbar-actions" id="topbar-actions"></div>
+      </header>
+      <div class="content">
+
+        <!-- INICIO -->
+        <div class="page active" id="page-inicio">
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:60vh;gap:16px;text-align:center">
+            <div style="width:72px;height:72px;border-radius:50%;background:var(--surface-2);display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="var(--text-3)" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div>
+              <div style="font-size:20px;font-weight:700;color:var(--text)">Bem-vindo ao LeilãoPro</div>
+              <div style="font-size:13px;color:var(--text-3);margin-top:6px">Selecione um módulo no menu lateral para começar.</div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+              <button class="btn btn-solid" onclick="navigate('credenciamento')">Credenciamento</button>
+              <button class="btn btn-outline" onclick="navigate('contratos')">Contratos</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CREDENCIAMENTO -->
+        <div class="page" id="page-credenciamento">
+          <div class="stats-grid" id="cred-stats">
+            <div class="stat-card">
+              <div class="stat-label">Total</div>
+              <div class="stat-value">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Processando</div>
+              <div class="stat-value">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Aprovados</div>
+              <div class="stat-value">—</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Hoje</div>
+              <div class="stat-value">—</div>
+            </div>
+          </div>
+          <div class="tabs">
+            <div class="tab" onclick="switchTab('upload')">Enviar Edital</div>
+            <div class="tab active" onclick="switchTab('lista')">Lista de Editais</div>
+          </div>
+
+          <!-- TAB UPLOAD -->
+          <div id="tab-upload">
+            <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Enviar Edital PDF</div>
+                    <div class="card-sub">O arquivo será processado automaticamente via n8n</div>
+                  </div>
+                </div>
+                <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+                  ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
+                  <div class="upload-icon"><svg viewBox="0 0 24 24">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                      <polyline points="17 8 12 3 7 8" />
+                      <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg></div>
+                  <div class="upload-title">Clique ou arraste o PDF aqui</div>
+                  <div class="upload-sub">Somente arquivos PDF · máx. 100 MB</div>
+                  <input type="file" id="file-input" accept=".pdf" onchange="handleFileSelect(event)" />
+                </div>
+                <div id="file-preview" style="display:none;margin-top:16px">
+                  <div
+                    style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                    </svg>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:13px;font-weight:500" id="file-name-display">—</div>
+                      <div style="font-size:11px;color:var(--text-3)" id="file-size-display">—</div>
+                      <div class="progress-bar" id="progress-bar" style="display:none">
+                        <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+                      </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="clearFile()">✕</button>
+                  </div>
+                </div>
+                <div id="meta-form" style="display:none;margin-top:16px">
+                  <div
+                    style="font-size:11px;font-weight:600;color:var(--text-3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.5px">
+                    Anotações Opcionais</div>
+                  <div class="form-row">
+                    <div class="field-group"><label>Observações</label><textarea id="meta-obs"
+                        placeholder="Observações adicionais…"></textarea></div>
+                  </div>
+                  <div style="display:flex;gap:10px;justify-content:flex-end">
+                    <button class="btn btn-outline" onclick="clearFile()">Cancelar</button>
+                    <button class="btn btn-solid" id="btn-send" onclick="sendEdital()">
+                      <svg viewBox="0 0 24 24">
+                        <line x1="22" y1="2" x2="11" y2="13" />
+                        <polygon points="22 2 15 22 11 13 2 9 22 2" />
+                      </svg>Enviar para Análise
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <!-- Sidebar info -->
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div class="card">
+                  <div class="card-title" style="margin-bottom:12px">Como funciona</div>
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div
+                        style="width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">
+                        1</div>
+                      <div style="font-size:12.5px;color:var(--text-2)">Selecione o PDF do edital</div>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div
+                        style="width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">
+                        2</div>
+                      <div style="font-size:12.5px;color:var(--text-2)">n8n extrai informações e resumo</div>
+                    </div>
+
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div
+                        style="width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">
+                        3</div>
+                      <div style="font-size:12.5px;color:var(--text-2)">Lista atualizada automaticamente</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="card" style="background:var(--surface-2)">
+                  <div
+                    style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+                    Status dos Webhooks</div>
+                  <div id="webhook-status-list" style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:6px;height:6px;border-radius:50%;background:var(--text-3)"></div>
+                      <span style="font-size:11px;color:var(--text-3)">Verificando…</span>
+                    </div>
+                  </div>
+                  <div id="webhook-alert"
+                    style="display:none;margin-top:10px;padding:8px 10px;background:var(--red-bg);border:1px solid var(--red);border-radius:6px;font-size:11px;color:var(--red);line-height:1.5">
+                    ⚠️ Serviço indisponível. Entre em contato com o administrador informando a falha.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB LISTA -->
+          <div id="tab-lista" style="display:none">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Editais Analisados</div>
+                  <div class="card-sub">Todos os editais enviados para análise</div>
+                </div>
+                <div style="display:flex;gap:8px;align-items:center">
+                  <input type="text" placeholder="Buscar…" id="busca-edital"
+                    style="padding:7px 11px;border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;font-family:inherit;width:200px;outline:none"
+                    oninput="loadEditais()" />
+                  <button class="btn btn-outline btn-sm" onclick="loadEditais()">
+                    <svg viewBox="0 0 24 24">
+                      <polyline points="1 4 1 10 7 10" />
+                      <path d="M3.51 15a9 9 0 1 0 .49-3.03" />
+                    </svg>Atualizar
+                  </button>
+                </div>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nº Edital</th>
+                      <th>Órgão</th>
+                      <th>Título (n8n)</th>
+                      <th>Status</th>
+                      <th>Enviado por</th>
+                      <th>Data</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="editais-tbody"></tbody>
+                </table>
+                <div id="editais-empty" class="empty-state" style="display:none">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                    <polyline points="14 2 14 8 20 8" />
+                  </svg>
+                  <p>Nenhum edital enviado ainda.<br>Use a aba "Enviar Edital" para começar.</p>
+                </div>
+                <div id="editais-loading" style="text-align:center;padding:40px;color:var(--text-3);display:none">
+                  <span class="spinner spinner-dark"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEILOEIROS -->
+        <div class="page" id="page-leiloeiros">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Leiloeiros Cadastrados</div>
+                <div class="card-sub">Cadastro de leiloeiros e suas matrículas por junta</div>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <input type="text" placeholder="Buscar…" id="busca-leiloeiro"
+                  style="padding:7px 11px;border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;font-family:inherit;width:200px;outline:none"
+                  oninput="loadLeiloeiros()" />
+                <button class="btn btn-solid btn-sm" id="btn-novo-leiloeiro" onclick="openNovoLeiloeiro()"
+                  style="display:none">
+                  <svg viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19" />
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                  </svg>Novo
+                </button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th>Matrículas</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="leiloeiros-tbody"></tbody>
+              </table>
+              <div id="leiloeiros-empty" class="empty-state" style="display:none">
+                <svg viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <p>Nenhum leiloeiro cadastrado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTRATOS -->
+        <div class="page" id="page-contratos">
+
+          <!-- STATS visíveis sempre -->
+          <div class="stats-grid" id="contratos-stats">
+            <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value" id="st-total">—</div></div>
+            <div class="stat-card"><div class="stat-label">Em Execução</div><div class="stat-value" id="st-exec">—</div></div>
+            <div class="stat-card"><div class="stat-label">Encerrados</div><div class="stat-value" id="st-enc">—</div></div>
+            <div class="stat-card"><div class="stat-label">Suspensos</div><div class="stat-value" id="st-sus">—</div></div>
+          </div>
+
+          <!-- ABAS abaixo das metricas -->
+          <div class="tabs">
+            <div class="tab" onclick="switchTabContrato('upload')" id="tab-btn-c-upload">Enviar Contrato</div>
+            <div class="tab active" onclick="switchTabContrato('lista')" id="tab-btn-c-lista">Contratos Criados</div>
+          </div>
+
+          <!-- ABA ENVIAR CONTRATO -->
+          <div id="tab-c-upload">
+            <div style="display:grid;grid-template-columns:1fr 320px;gap:20px">
+              <div class="card">
+                <div class="card-header">
+                  <div>
+                    <div class="card-title">Novo Contrato</div>
+                    <div class="card-sub">Preencha as referências e anexe o PDF para extração via IA</div>
+                  </div>
+                </div>
+                <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+                  <div class="form-row col2">
+                    <div class="field-group"><label>Edital de Credenciamento</label>
+                      <select id="c-edital"><option value="">Selecione um edital aprovado (opcional)…</option></select>
+                    </div>
+                    <div class="field-group"><label>Observações</label>
+                      <textarea id="c-observacoes" placeholder="Anotações internas..." style="min-height:36px;padding:8px"></textarea>
+                    </div>
+                  </div>
+                  <div class="form-row col2">
+                    <div class="field-group"><label>Leiloeiro *</label>
+                      <select id="c-leiloeiro" onchange="loadMatriculasSelectContrato()"><option value="">Selecione…</option></select>
+                    </div>
+                    <div class="field-group"><label>Matrícula (UF/Junta) *</label>
+                      <select id="c-matricula"><option value="">Selecione o leiloeiro primeiro…</option></select>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label>Arquivo PDF do Contrato *</label>
+                    <div class="upload-zone" id="c-upload-zone" onclick="document.getElementById('c-arquivo').click()"
+                      ondragover="handleDragContrato(event,true)" ondragleave="handleDragContrato(event,false)" ondrop="handleDropContrato(event)">
+                      <div class="upload-icon"><svg viewBox="0 0 24 24">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                          <polyline points="17 8 12 3 7 8" />
+                          <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg></div>
+                      <div class="upload-title">Clique ou arraste o PDF aqui</div>
+                      <div class="upload-sub">Somente arquivos PDF · máx. 50 MB</div>
+                      <input type="file" id="c-arquivo" accept=".pdf" style="display:none" onchange="handleFileSelectContrato(event)" />
+                    </div>
+                  </div>
+
+                  <div id="c-file-preview" style="display:none;margin-top:8px">
+                    <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                      </svg>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:13px;font-weight:500" id="c-file-name-display">—</div>
+                        <div style="font-size:11px;color:var(--text-3)" id="c-file-size-display">—</div>
+                      </div>
+                      <button class="btn btn-ghost btn-sm" onclick="clearFileContrato()">✕</button>
+                    </div>
+                  </div>
+                  <div style="display:flex;justify-content:flex-end;margin-top:10px">
+                    <button class="btn btn-solid" onclick="saveContrato()">Processar Contrato</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sidebar info Contratos -->
+              <div style="display:flex;flex-direction:column;gap:14px">
+                <div class="card">
+                  <div class="card-title" style="margin-bottom:12px">Como funciona</div>
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div style="width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">1</div>
+                      <div style="font-size:12.5px;color:var(--text-2)">Selecione o PDF do contrato</div>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div style="width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">2</div>
+                      <div style="font-size:12.5px;color:var(--text-2)">IA extrai cláusulas e resumo</div>
+                    </div>
+                    <div style="display:flex;gap:10px;align-items:flex-start">
+                      <div style="width:22px;height:22px;background:var(--text);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">3</div>
+                      <div style="font-size:12.5px;color:var(--text-2)">Lista atualizada com status de execução</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card" style="background:var(--surface-2)">
+                  <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Status dos Webhooks</div>
+                  <div class="webhook-status-list-class" id="c-webhook-status-list" style="display:flex;flex-direction:column;gap:8px">
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <div style="width:6px;height:6px;border-radius:50%;background:var(--text-3)"></div>
+                      <span style="font-size:11px;color:var(--text-3)">Verificando…</span>
+                    </div>
+                  </div>
+                  <div class="webhook-alert-class" id="c-webhook-alert" style="margin-top:12px;padding:10px;background:rgba(255,0,0,0.1);border:1px solid var(--red);border-radius:6px;color:var(--red);font-size:11px;font-weight:600;display:none">
+                    ⚠ WEBHOOKS OFFLINE: Entre em contato com o administrador.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ABA CONTRATOS CRIADOS -->
+          <div id="tab-c-lista">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-title">Contratos</div>
+                <input type="text" placeholder="Buscar…" id="busca-contrato" style="padding:7px 11px;border:1px solid var(--border-strong);border-radius:var(--radius);font-size:13px;font-family:inherit;width:200px;outline:none" oninput="loadContratos()" />
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Contrato (Ref)</th>
+                      <th>Edital Cred.</th>
+                      <th>Título / Leiloeiro</th>
+                      <th>UF/Matr.</th>
+                      <th>Status (IA)</th>
+                      <th>Data</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="contratos-tbody"></tbody>
+                </table>
+                <div id="contratos-empty" class="empty-state" style="display:none">
+                  <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                  <p>Nenhum contrato cadastrado.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GERADOR DE DOCUMENTOS -->
+        <div class="page" id="page-avaliacao">
+          <div class="permission-denied">
+            <svg viewBox="0 0 24 24">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+              <line x1="16" y1="13" x2="8" y2="13" />
+              <line x1="16" y1="17" x2="8" y2="17" />
+            </svg>
+            <h3>Gerador de Documentos</h3>
+            <p>Este módulo estará disponível em breve.</p>
+          </div>
+        </div>
+
+        <!-- USUÁRIOS -->
+        <div class="page" id="page-usuarios">
+          <div id="users-content">
+            <div class="empty-state"><span class="spinner spinner-dark"></span></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL EDITAL -->
+  <div class="modal-overlay" id="modal-edital">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="modal-edital-title">Detalhes do Edital</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:3px" id="modal-edital-sub">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-edital')"><svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <div id="modal-edital-body"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:20px;gap:8px">
+        <button class="btn btn-outline btn-sm" id="btn-create-contrato-edital" onclick="createContratoFromEdital()"
+          style="display:none;margin-right:auto">Criar Contrato via Edital</button>
+        <button class="btn btn-danger btn-sm" id="btn-delete-edital" onclick="deleteEdital()"
+          style="display:none">Excluir</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-edital')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL USUÁRIO -->
+  <div class="modal-overlay" id="modal-usuario">
+    <div class="modal" style="width:560px">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-usuario-title">Novo Usuário</div>
+        <button class="modal-close" onclick="closeModal('modal-usuario')"><svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <div class="form-row col2">
+        <div class="field-group"><label>Nome *</label><input type="text" id="u-nome" placeholder="Nome completo" />
+        </div>
+        <div class="field-group"><label>E-mail *</label><input type="email" id="u-email"
+            placeholder="email@dominio.com" /></div>
+      </div>
+      <div class="form-row col2">
+        <div class="field-group"><label>Senha *</label><input type="password" id="u-senha"
+            placeholder="Mínimo 6 caracteres" /></div>
+        <div class="field-group"><label>Perfil *</label>
+          <select id="u-perfil">
+            <option value="analista">Analista</option>
+            <option value="gestor">Gestor</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:12px;font-weight:500;color:var(--text-2);margin-bottom:8px">Módulos com acesso</div>
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox"
+              id="p-credenciamento" checked /> Credenciamento</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox"
+              id="p-contratos" /> Contratos</label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer"><input type="checkbox"
+              id="p-avaliacao" /> Gerador de Docs</label>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:center">
+        <button class="btn btn-outline btn-sm" id="btn-admin-reset" onclick="adminResetSenha()"
+          style="display:none">Redefinir Senha</button>
+        <div style="display:flex;gap:8px;margin-left:auto">
+          <button class="btn btn-outline" onclick="closeModal('modal-usuario')">Cancelar</button>
+          <button class="btn btn-solid" onclick="saveUser()">Salvar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL LEILOEIRO -->
+  <div class="modal-overlay" id="modal-leiloeiro">
+    <div class="modal" style="width:620px">
+      <div class="modal-header">
+        <div class="modal-title" id="modal-leiloeiro-title">Novo Leiloeiro</div>
+        <button class="modal-close" onclick="closeModal('modal-leiloeiro')"><svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <div
+        style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">
+        Dados do Leiloeiro</div>
+      <div class="form-row col2">
+        <div class="field-group"><label>Nome *</label><input type="text" id="l-nome" placeholder="Nome completo" />
+        </div>
+        <div class="field-group"><label>CPF</label><input type="text" id="l-cpf" placeholder="000.000.000-00" /></div>
+      </div>
+      <div class="form-row col2">
+        <div class="field-group"><label>E-mail</label><input type="email" id="l-email"
+            placeholder="email@dominio.com" /></div>
+        <div class="field-group"><label>Telefone</label><input type="text" id="l-telefone"
+            placeholder="(00) 00000-0000" /></div>
+      </div>
+      <div style="border-top:1px solid var(--border);margin:16px 0 12px"></div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px">
+          Matrículas por Junta</div>
+        <button class="btn btn-outline btn-sm" onclick="addMatriculaRow()"><svg viewBox="0 0 24 24">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg> Adicionar Matrícula</button>
+      </div>
+      <div id="matriculas-container"
+        style="display:flex;flex-direction:column;gap:10px;max-height:300px;overflow-y:auto"></div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+        <button class="btn btn-outline" onclick="closeModal('modal-leiloeiro')">Cancelar</button>
+        <button class="btn btn-solid" onclick="saveLeiloeiro()">Salvar Leiloeiro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VISUALIZAÇÃO DE CONTRATO (AI) -->
+  <div class="modal-overlay" id="modal-view-contrato">
+    <div class="modal">
+      <div class="modal-header">
+        <div>
+          <div class="modal-title" id="mvc-title">Detalhes do Contrato</div>
+          <div style="font-size:12px;color:var(--text-3);margin-top:3px" id="mvc-sub">—</div>
+        </div>
+        <button class="modal-close" onclick="closeModal('modal-view-contrato')"><svg viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg></button>
+      </div>
+      <div id="modal-view-contrato-body" style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+        <!-- Injetado via JS -->
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin-top:20px;gap:8px">
+        <button class="btn btn-danger btn-sm" id="btn-delete-contrato" onclick="deleteContrato()" style="display:none">Excluir</button>
+        <button class="btn btn-outline" onclick="closeModal('modal-view-contrato')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script>
+    // ══════════════════════════════════════════════════
+    //  CONFIG — aponta para o backend
+    // ══════════════════════════════════════════════════
+    const API = ''; // vazio = mesmo servidor. Em dev: 'http://localhost:3000'
+
+    let currentUser = null;
+    let token = null;
+    let selectedFile = null;
+    let selectedFileContrato = null;
+    let currentEditalId = null;
+    let editingUserId = null;
+    let activeTab = 'upload';
+    let editaisData = [];
+    let pollingInterval = null;
+
+    // ── API HELPER ──
+    async function api(method, path, body = null, isForm = false) {
+      const headers = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      if (!isForm && body) headers['Content-Type'] = 'application/json';
+
+      const opts = { method, headers };
+      if (body) opts.body = isForm ? body : JSON.stringify(body);
+
+      const res = await fetch(API + path, opts);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Erro na requisição');
+      return data;
+    }
+
+    // ══════════════════════════════════════════════════
+    //  AUTH
+    // ══════════════════════════════════════════════════
+    async function doLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const senha = document.getElementById('login-password').value;
+      const btn = document.getElementById('btn-login');
+      btn.innerHTML = '<span class="spinner"></span> Entrando…'; btn.disabled = true;
+      document.getElementById('auth-error').style.display = 'none';
+
+      try {
+        const data = await api('POST', '/api/auth/login', { email, senha });
+        token = data.token;
+        currentUser = data.user;
+        localStorage.setItem('lp_token', token);
+        btn.innerHTML = 'Entrar'; btn.disabled = false;
+        initApp();
+      } catch (e) {
+        document.getElementById('auth-error').style.display = 'block';
+        document.getElementById('auth-error').textContent = e.message;
+        btn.innerHTML = 'Entrar'; btn.disabled = false;
+      }
+    }
+
+    async function tryAutoLogin() {
+      const saved = localStorage.getItem('lp_token');
+      if (!saved) return false;
+      token = saved;
+      try {
+        currentUser = await api('GET', '/api/auth/me');
+        return true;
+      } catch { localStorage.removeItem('lp_token'); token = null; return false; }
+    }
+
+    function doLogout() {
+      token = null; currentUser = null;
+      localStorage.removeItem('lp_token');
+      clearInterval(pollingInterval);
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('login-password').value = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && document.getElementById('auth-screen').style.display !== 'none') doLogin();
+    });
+
+    // ══════════════════════════════════════════════════
+    //  APP INIT
+    // ══════════════════════════════════════════════════
+    function initApp() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('sidebar-name').textContent = currentUser.nome;
+      document.getElementById('sidebar-role').textContent = profileLabel(currentUser.perfil);
+      document.getElementById('sidebar-avatar').textContent = initials(currentUser.nome);
+      if (currentUser.perfil === 'admin') document.getElementById('nav-admin-section').style.display = 'block';
+      applyNavPermissions();
+      navigate('credenciamento');
+      // Polling para atualizar a lista e webhooks
+      pollingInterval = setInterval(() => { 
+        if (activeTab === 'lista') loadEditais(true);
+        checkWebhookStatus();
+      }, 15000);
+    }
+
+    function profileLabel(p) { return { admin: 'Administrador', gestor: 'Gestor', analista: 'Analista' }[p] || p; }
+    function initials(n) { return n.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
+
+    function applyNavPermissions() {
+      const perms = currentUser.permissoes;
+      const isAdmin = currentUser.perfil === 'admin';
+      // Leiloeiros: todos veem; edicao so admin
+      if (isAdmin) document.getElementById('btn-novo-leiloeiro').style.display = 'inline-flex';
+      // Contratos e avaliacao: baseado em permissoes
+      ['contratos', 'avaliacao'].forEach(p => {
+        const el = document.getElementById('nav-' + p);
+        if (el) el.classList.toggle('locked', !perms.includes(p) && !isAdmin);
+      });
+    }
+
+    // ══════════════════════════════════════════════════
+    //  NAVIGATION
+    // ══════════════════════════════════════════════════
+    const pageMeta = {
+      inicio: { title: 'Início', sub: 'Bem-vindo ao LeilãoPro' },
+      credenciamento: { title: 'Credenciamento', sub: 'Análise e gestão de editais' },
+      leiloeiros: { title: 'Leiloeiros', sub: 'Cadastro de leiloeiros e matrículas' },
+      contratos: { title: 'Contratos', sub: 'Gestão de contratos' },
+      avaliacao: { title: 'Gerador de Documentos', sub: 'Em desenvolvimento' },
+      usuarios: { title: 'Usuários', sub: 'Gerenciar acesso ao sistema' },
+    };
+
+    function navigate(page) {
+      if ((page === 'usuarios' || page === 'leiloeiros') && currentUser.perfil !== 'admin') {
+        return showToast('Sem permissão para este módulo.', 'error');
+      }
+      const restrictedPages = ['contratos', 'avaliacao'];
+      if (restrictedPages.includes(page) && !currentUser.permissoes.includes(page) && currentUser.perfil !== 'admin') {
+        return showToast('Sem permissão para este módulo.', 'error');
+      }
+      if (page === 'usuarios' && currentUser.perfil !== 'admin') return;
+
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      const navEl = document.getElementById('nav-' + page);
+      if (navEl) navEl.classList.add('active');
+      document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+      const pageEl = document.getElementById('page-' + page);
+      if (pageEl) pageEl.classList.add('active');
+
+      const meta = pageMeta[page] || {};
+      document.getElementById('page-title').textContent = meta.title || page;
+      document.getElementById('page-sub').textContent = meta.sub || '';
+
+      const actions = document.getElementById('topbar-actions');
+      actions.innerHTML = '';
+      if (page === 'credenciamento') {
+        actions.innerHTML = `<span style="font-size:12px;color:var(--text-3)">Olá, ${currentUser.nome.split(' ')[0]}</span>`;
+        loadStats();
+        // Abre na aba Lista de Editais por padrao
+        if (activeTab !== 'lista') switchTab('lista');
+        else loadEditais();
+      }
+      if (page === 'usuarios') {
+        actions.innerHTML = `<button class="btn btn-solid btn-sm" onclick="openNewUser()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Usuário</button>`;
+        loadUsers();
+      }
+      if (page === 'leiloeiros') loadLeiloeiros();
+      if (page === 'contratos') {
+        // Abre na aba Contratos Criados por padrao
+        if (contratosActiveTab !== 'lista') {
+          switchTabContrato('lista');
+        } else {
+          loadContratos();
+        }
+      }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  TABS
+    // ══════════════════════════════════════════════════
+    function switchTab(tab) {
+      activeTab = tab;
+      const tabUpload = document.querySelector('#page-credenciamento .tab:nth-child(1)');
+      const tabLista = document.querySelector('#page-credenciamento .tab:nth-child(2)');
+      if (tabUpload) tabUpload.classList.toggle('active', tab === 'upload');
+      if (tabLista) tabLista.classList.toggle('active', tab === 'lista');
+      document.getElementById('tab-upload').style.display = tab === 'upload' ? 'block' : 'none';
+      document.getElementById('tab-lista').style.display = tab === 'lista' ? 'block' : 'none';
+      if (tab === 'lista') loadEditais();
+    }
+
+    // ══════════════════════════════════════════════════
+    //  STATS
+    // ══════════════════════════════════════════════════
+    async function loadStats() {
+      try {
+        const s = await api('GET', '/api/editais/stats/resumo');
+        document.getElementById('cred-stats').innerHTML = `
+      <div class="stat-card"><div class="stat-label">Total Editais</div><div class="stat-value">${s.total}</div><div class="stat-delta">Todos os períodos</div></div>
+      <div class="stat-card"><div class="stat-label">Processando</div><div class="stat-value">${s.processing}</div><div class="stat-delta">Aguardando n8n</div></div>
+      <div class="stat-card"><div class="stat-label">Aprovados</div><div class="stat-value">${s.approved}</div><div class="stat-delta up">Finalizados</div></div>
+      <div class="stat-card"><div class="stat-label">Hoje</div><div class="stat-value">${s.hoje}</div><div class="stat-delta">Enviados hoje</div></div>
+    `;
+      } catch { }
+      checkWebhookStatus();
+    }
+
+    async function checkWebhookStatus() {
+      const lists = document.querySelectorAll('.webhook-status-list-class, #webhook-status-list');
+      const alerts = document.querySelectorAll('.webhook-alert-class, #webhook-alert');
+      
+      try {
+        const h = await api('GET', '/api/health/webhooks');
+        const items = [
+          { label: 'Endpoint n8n (retorno)', key: 'n8n_retorno', status: h.n8n_retorno },
+          { label: 'Webhook Ummense', key: 'ummense', status: h.ummense },
+        ];
+        const hasOffline = items.some(i => i.status !== 'online');
+        
+        const html = items.map(i => {
+          const online = i.status === 'online';
+          return `<div style="display:flex;align-items:center;gap:6px">
+            <div style="width:6px;height:6px;border-radius:50%;background:${online ? 'var(--green)' : 'var(--red)'}"></div>
+            <span style="font-size:11px;color:${online ? 'var(--green)' : 'var(--red)'};font-weight:500">${i.label}: ${online ? 'Ativo' : 'Inativo'}</span>
+          </div>`;
+        }).join('');
+
+        lists.forEach(el => el.innerHTML = html);
+        alerts.forEach(el => el.style.display = hasOffline ? 'block' : 'none');
+        
+        // Também atualiza o modal se estiver aberto
+        if (document.getElementById('modal-view-contrato').classList.contains('open')) {
+            const modalList = document.getElementById('mvc-webhook-status');
+            const modalAlert = document.getElementById('mvc-webhook-critical-alert');
+            if (modalList) modalList.innerHTML = html.replace(/Endpoint n8n \(retorno\)/g, 'IA (n8n retorno)').replace(/Webhook Ummense/g, 'Ummense (Gestão)');
+            if (modalAlert) modalAlert.style.display = hasOffline ? 'block' : 'none';
+        }
+
+      } catch {
+        lists.forEach(el => el.innerHTML = `<div style="font-size:11px;color:var(--text-3)">Erro ao verificar.</div>`);
+      }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  FILE UPLOAD
+    // ══════════════════════════════════════════════════
+    function handleDrag(e, over) { e.preventDefault(); document.getElementById('upload-zone').classList.toggle('dragover', over); }
+    function handleDrop(e) {
+      e.preventDefault(); handleDrag(e, false);
+      const f = e.dataTransfer.files[0];
+      if (f && f.type === 'application/pdf') setFile(f);
+      else showToast('Apenas arquivos PDF são aceitos.', 'error');
+    }
+    function handleFileSelect(e) { if (e.target.files[0]) setFile(e.target.files[0]); }
+    function setFile(f) {
+      selectedFile = f;
+      document.getElementById('file-preview').style.display = 'block';
+      document.getElementById('meta-form').style.display = 'block';
+      document.getElementById('file-name-display').textContent = f.name;
+      document.getElementById('file-size-display').textContent = formatBytes(f.size);
+    }
+    function clearFile() {
+      selectedFile = null;
+      document.getElementById('file-preview').style.display = 'none';
+      document.getElementById('meta-form').style.display = 'none';
+      document.getElementById('file-input').value = '';
+      ['meta-numero', 'meta-orgao', 'meta-data', 'meta-obs'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('meta-uf').value = '';
+      document.getElementById('progress-bar').style.display = 'none';
+    }
+    function formatBytes(b) {
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+      return (b / 1048576).toFixed(1) + ' MB';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  SEND EDITAL TO BACKEND → n8n
+    // ══════════════════════════════════════════════════
+    async function sendEdital() {
+      if (!selectedFile) return showToast('Selecione um arquivo PDF.', 'error');
+
+      const btn = document.getElementById('btn-send');
+      btn.innerHTML = '<span class="spinner"></span> Enviando…'; btn.disabled = true;
+      document.getElementById('progress-bar').style.display = 'block';
+      animateProgress(0, 80, 1500);
+
+      const form = new FormData();
+      form.append('file', selectedFile, selectedFile.name);
+      
+      const obs = document.getElementById('meta-obs').value.trim();
+      if (obs) form.append('obs', obs);
+
+      try {
+        await api('POST', '/api/editais/upload', form, true);
+        animateProgress(80, 100, 300);
+        setTimeout(() => {
+          showToast('Edital enviado para processamento!', 'success');
+          clearFile();
+          loadStats();
+          btn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar para Análise';
+          btn.disabled = false;
+        }, 400);
+      } catch (e) {
+        showToast('Erro ao enviar: ' + e.message, 'error');
+        document.getElementById('progress-fill').style.width = '0%';
+        btn.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" fill="none" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Enviar para Análise';
+        btn.disabled = false;
+      }
+    }
+
+    function animateProgress(from, to, dur) {
+      const fill = document.getElementById('progress-fill');
+      const start = performance.now();
+      (function step(now) {
+        const t = Math.min((now - start) / dur, 1);
+        fill.style.width = (from + (to - from) * t) + '%';
+        if (t < 1) requestAnimationFrame(step);
+      })(performance.now());
+    }
+
+    // Webhooks no Modal de Contrato
+    async function checkModalWebhookStatus() {
+      const list = document.getElementById('mvc-webhook-status');
+      const critical = document.getElementById('mvc-webhook-critical-alert');
+      if (!list) return;
+      try {
+        const h = await api('GET', '/api/health/webhooks');
+        const items = [
+          { label: 'IA (n8n retorno)', key: 'n8n_retorno', status: h.n8n_retorno },
+          { label: 'Ummense (Gestão)', key: 'ummense', status: h.ummense },
+        ];
+        const hasOffline = items.some(i => i.status !== 'online');
+        list.innerHTML = items.map(i => {
+          const online = i.status === 'online';
+          return `<div style="display:flex;align-items:center;gap:6px">
+            <div style="width:6px;height:6px;border-radius:50%;background:${online ? 'var(--green)' : 'var(--red)'}"></div>
+            <span style="font-size:11px;color:${online ? 'var(--green)' : 'var(--red)'};font-weight:500">${i.label}: ${online ? 'Ativo' : 'Inativo'}</span>
+          </div>`;
+        }).join('');
+        critical.style.display = hasOffline ? 'block' : 'none';
+      } catch {
+        list.innerHTML = `<div style="font-size:11px;color:var(--text-3)">Erro ao verificar webhooks.</div>`;
+      }
+    }
+
+    // Drag and Drop Contratos
+    function handleDragContrato(e, over) { 
+      e.preventDefault(); 
+      const zone = document.getElementById('c-upload-zone');
+      if (zone) zone.classList.toggle('dragover', over); 
+    }
+    function handleDropContrato(e) {
+      e.preventDefault(); 
+      handleDragContrato(e, false);
+      const f = e.dataTransfer.files[0];
+      if (f && f.type === 'application/pdf') setFileContrato(f);
+      else showToast('Apenas arquivos PDF são aceitos.', 'error');
+    }
+    function handleFileSelectContrato(e) { 
+      if (e.target.files[0]) setFileContrato(e.target.files[0]); 
+    }
+    function setFileContrato(f) {
+      selectedFileContrato = f;
+      const preview = document.getElementById('c-file-preview');
+      if (preview) preview.style.display = 'block';
+      const nameDisp = document.getElementById('c-file-name-display');
+      if (nameDisp) nameDisp.textContent = f.name;
+      const sizeDisp = document.getElementById('c-file-size-display');
+      if (sizeDisp) sizeDisp.textContent = formatBytes(f.size);
+    }
+    function clearFileContrato() {
+      selectedFileContrato = null;
+      const preview = document.getElementById('c-file-preview');
+      if (preview) preview.style.display = 'none';
+      const input = document.getElementById('c-arquivo');
+      if (input) input.value = '';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  EDITAIS LIST
+    // ══════════════════════════════════════════════════
+    async function loadEditais(silent = false) {
+      const busca = document.getElementById('busca-edital')?.value || '';
+      if (!silent) {
+        document.getElementById('editais-loading').style.display = 'block';
+        document.getElementById('editais-empty').style.display = 'none';
+        document.getElementById('editais-tbody').innerHTML = '';
+      }
+      try {
+        const params = busca ? `?busca=${encodeURIComponent(busca)}` : '';
+        editaisData = await api('GET', '/api/editais' + params);
+        renderEditais();
+        if (!silent) loadStats();
+      } catch (e) {
+        showToast('Erro ao carregar editais.', 'error');
+      }
+      document.getElementById('editais-loading').style.display = 'none';
+    }
+
+    function renderEditais() {
+      const tbody = document.getElementById('editais-tbody');
+      const empty = document.getElementById('editais-empty');
+      if (!editaisData.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      tbody.innerHTML = editaisData.map(e => `
+    <tr>
+      <td><span class="mono">${e.numero || '—'}</span></td>
+      <td>${e.orgao || '—'}</td>
+      <td style="max-width:200px">
+        ${e.titulo_edital
+          ? `<span title="${e.titulo_edital}" style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px">${e.titulo_edital}</span>`
+          : '<span style="color:var(--text-3);font-size:12px">Aguardando…</span>'}
+      </td>
+      <td>${statusBadge(e.status)}</td>
+      <td style="color:var(--text-2);font-size:12px">${e.usuario_nome}</td>
+      <td style="color:var(--text-3);font-size:12px">${formatDateTime(e.criado_em)}</td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openEditalModal(${e.id})">
+        <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button></td>
+    </tr>
+  `).join('');
+    }
+
+    function statusBadge(s) {
+      return {
+        processing: '<span class="status status-processing">Processando</span>',
+        approved: '<span class="status status-approved">Aprovado</span>',
+        rejected: '<span class="status status-rejected">Rejeitado</span>',
+        pending: '<span class="status status-pending">Pendente</span>',
+      }[s] || `<span class="status status-pending">${s}</span>`;
+    }
+
+    function formatDate(d) { if (!d) return '—'; const [y, m, dd] = d.split('-'); return `${dd}/${m}/${y}`; }
+    function formatDateTime(iso) {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ══════════════════════════════════════════════════
+    //  EDITAL MODAL
+    // ══════════════════════════════════════════════════
+    function renderResumo(texto) {
+      if (!texto) return '';
+      // Seções conhecidas do prompt do AI Agent
+      const secoes = ['OBJETO', 'VIG\u00caNCIA', 'COMISS\u00c3O', 'REQUISITOS', 'DOCUMENTA\u00c7\u00c3O', 'PROCEDIMENTOS', 'RECURSOS', 'PENALIDADES', 'PONTOS CR\u00cdTICOS'];
+      const regex = new RegExp(`(${secoes.join('|')}):`, 'g');
+      const partes = texto.split(regex);
+      if (partes.length <= 1) {
+        // Sem seções identificadas — exibe como texto
+        return `<div class="resumo-secao"><div class="resumo-secao-corpo">${texto}</div></div>`;
+      }
+      let html = '';
+      for (let i = 1; i < partes.length; i += 2) {
+        const titulo = partes[i];
+        const corpo = (partes[i + 1] || '').trim();
+        html += `<div class="resumo-secao">
+      <div class="resumo-secao-titulo">${titulo}</div>
+      <div class="resumo-secao-corpo">${corpo}</div>
+    </div>`;
+      }
+      return html;
+    }
+
+    function copyUUID(uuid) {
+      navigator.clipboard.writeText(uuid).then(() => showToast('UUID copiado!'));
+    }
+
+    function openEditalModal(id) {
+      const e = editaisData.find(x => x.id === id);
+      if (!e) return;
+      currentEditalId = id;
+
+      // Atualiza header do modal
+      document.getElementById('modal-edital-title').textContent = `Edital ${e.numero || '\u2014'}`;
+      document.getElementById('modal-edital-sub').textContent = e.orgao || '';
+
+      const canDelete = currentUser.perfil === 'admin' || e.usuario_id === currentUser.id;
+      document.getElementById('btn-delete-edital').style.display = canDelete ? 'inline-flex' : 'none';
+      const canCreateContrato = currentUser.permissoes.includes('contratos');
+      const btnCreateContrato = document.getElementById('btn-create-contrato-edital');
+      btnCreateContrato.style.display = canCreateContrato ? 'inline-flex' : 'none';
+      
+      if (e.status !== 'approved') {
+        btnCreateContrato.disabled = true;
+        btnCreateContrato.title = 'Apenas editais aprovados podem gerar contratos.';
+        btnCreateContrato.style.opacity = '0.5';
+        btnCreateContrato.style.cursor = 'not-allowed';
+      } else {
+        btnCreateContrato.disabled = false;
+        btnCreateContrato.title = '';
+        btnCreateContrato.style.opacity = '1';
+        btnCreateContrato.style.cursor = 'pointer';
+      }
+      const canChangeStatus = currentUser.perfil === 'admin' || currentUser.perfil === 'gestor';
+
+      const processado = e.status === 'approved' || e.status === 'rejected';
+
+      document.getElementById('modal-edital-body').innerHTML = `
+
+    <!-- BLOCO 1: T\u00cdTULO + UUID + STATUS (retorno n8n) -->
+    <div class="modal-bloco" style="${processado ? 'background:var(--green-bg);border-color:#c6e8d8' : 'background:var(--surface-2)'};margin-bottom:12px">
+      ${e.titulo_edital
+          ? `<div style="font-size:10px;font-weight:600;color:${processado ? 'var(--green)' : 'var(--text-3)'};text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">\u2713 T\u00edtulo extra\u00eddo pelo n8n</div>
+           <div style="font-size:14px;font-weight:600;line-height:1.4">${e.titulo_edital}</div>`
+          : `<div style="font-size:12px;color:var(--text-3);font-style:italic">Aguardando an\u00e1lise do n8n\u2026</div>`
+        }
+      <div class="uuid-row">
+        <span class="uuid-text">uuid: ${e.uuid}</span>
+        <button class="uuid-copy" onclick="copyUUID('${e.uuid}')" title="Copiar UUID">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:8px;flex-wrap:wrap">
+        ${statusBadge(e.status)}
+        ${e.data_processamento ? `<span style="font-size:11px;color:var(--text-3)">Processado em ${e.data_processamento}</span>` : ''}
+      </div>
+    </div>
+
+    <!-- BLOCO 2: DADOS DO EDITAL (usu\u00e1rio) -->
+    <div class="modal-bloco">
+      <div class="modal-bloco-label">Dados do Edital</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="padding:10px;background:var(--surface-2);border-radius:6px">
+          <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:2px">N\u00ba Edital</div>
+          <div class="mono" style="font-size:13px">${e.numero || '\u2014'}</div>
+        </div>
+        <div style="padding:10px;background:var(--surface-2);border-radius:6px">
+          <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:2px">\u00d3rg\u00e3o</div>
+          <div style="font-size:13px">${e.orgao || '\u2014'}</div>
+        </div>
+        <div style="padding:10px;background:var(--surface-2);border-radius:6px">
+          <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:2px">Data Processamento</div>
+          <div style="font-size:13px">${e.data_processamento ? formatDateTime(e.data_processamento) : '\u2014'}</div>
+        </div>
+      </div>
+      ${e.observacoes ? `<div style="margin-top:8px;padding:10px;background:var(--surface-2);border-radius:6px;font-size:12.5px;color:var(--text-2)">${e.observacoes}</div>` : ''}
+    </div>
+
+    <!-- BLOCO 3: AN\u00c1LISE DO N8N -->
+    ${e.edital_resumo ? `
+    <div class="modal-bloco">
+      <div class="modal-bloco-label">An\u00e1lise do n8n</div>
+      <div style="max-height:280px;overflow-y:auto;padding-right:4px">
+        ${renderResumo(e.edital_resumo)}
+      </div>
+    </div>` : ''}
+
+    <!-- BLOCO 4: FOOTER -->
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:10px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--text-3);line-height:1.6">
+        Enviado por <strong style="color:var(--text-2)">${e.usuario_nome}</strong> em ${formatDateTime(e.criado_em)}
+        ${e.arquivo_nome ? `<br><span class="mono">${e.arquivo_nome}</span> (${formatBytes(e.arquivo_tamanho || 0)})` : ''}
+      </div>
+      ${canChangeStatus ? `
+      <div style="display:flex;align-items:center;gap:6px">
+        <label style="font-size:11px;color:var(--text-2);font-weight:500">Alterar status:</label>
+        <select onchange="changeStatus(${e.id},this.value)" style="padding:4px 8px;border:1px solid var(--border-strong);border-radius:6px;font-size:12px;font-family:inherit;background:var(--surface)">
+          <option value="processing" ${e.status === 'processing' ? 'selected' : ''}>Processando</option>
+          <option value="approved"   ${e.status === 'approved' ? 'selected' : ''}>Aprovado</option>
+          <option value="rejected"   ${e.status === 'rejected' ? 'selected' : ''}>Rejeitado</option>
+          <option value="pending"    ${e.status === 'pending' ? 'selected' : ''}>Pendente</option>
+        </select>
+      </div>` : ''}
+    </div>
+  `;
+      openModal('modal-edital');
+    }
+
+
+    async function changeStatus(id, status) {
+      try {
+        await api('PATCH', `/api/editais/${id}/status`, { status });
+        const e = editaisData.find(x => x.id === id);
+        if (e) e.status = status;
+        renderEditais(); loadStats();
+        showToast('Status atualizado.', 'success');
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function deleteEdital() {
+      if (!confirm('Excluir este edital?')) return;
+      try {
+        await api('DELETE', `/api/editais/${currentEditalId}`);
+        closeModal('modal-edital');
+        editaisData = editaisData.filter(e => e.id !== currentEditalId);
+        renderEditais(); loadStats();
+        showToast('Edital removido.');
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    function createContratoFromEdital() {
+      closeModal('modal-edital');
+      navigate('contratos');
+      switchTabContrato('upload');
+      initFormContrato(currentEditalId);
+    }
+
+    // ══════════════════════════════════════════════════
+    //  USERS
+    // ══════════════════════════════════════════════════
+    async function loadUsers() {
+      try {
+        const users = await api('GET', '/api/usuarios');
+        const pl = { credenciamento: 'Credenciamento', contratos: 'Contratos', avaliacao: 'Gerador de Docs' };
+        document.getElementById('users-content').innerHTML = `
+      <div class="admin-grid">
+        ${users.map(u => `
+          <div class="user-card">
+            <div class="user-card-avatar">${initials(u.nome)}</div>
+            <div class="user-card-info">
+              <div class="user-card-name">${u.nome} <span class="badge-role">${profileLabel(u.perfil)}</span></div>
+              <div class="user-card-email">${u.email}</div>
+              <div class="permission-chips">
+                ${['credenciamento', 'contratos', 'avaliacao'].map(p =>
+          `<span class="chip ${u.permissoes.includes(p) || u.perfil === 'admin' ? 'active' : ''}">${pl[p]}</span>`
+        ).join('')}
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
+              <button class="btn btn-ghost btn-sm" onclick="openEditUser(${u.id})">
+                <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              ${u.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">
+                <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>` : ''}
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
+      } catch (e) { showToast('Erro ao carregar usuários.', 'error'); }
+    }
+
+    function openNewUser() {
+      editingUserId = null;
+      document.getElementById('modal-usuario-title').textContent = 'Novo Usuário';
+      ['u-nome', 'u-email', 'u-senha'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('u-perfil').value = 'analista';
+      document.getElementById('p-credenciamento').checked = true;
+      document.getElementById('p-contratos').checked = false;
+      document.getElementById('p-avaliacao').checked = false;
+      document.getElementById('btn-admin-reset').style.display = 'none';
+      openModal('modal-usuario');
+    }
+
+    async function openEditUser(id) {
+      try {
+        const users = await api('GET', '/api/usuarios');
+        const u = users.find(x => x.id === id);
+        if (!u) return;
+        editingUserId = id;
+        document.getElementById('modal-usuario-title').textContent = 'Editar Usuário';
+        document.getElementById('u-nome').value = u.nome;
+        document.getElementById('u-email').value = u.email;
+        document.getElementById('u-senha').value = '';
+        document.getElementById('u-perfil').value = u.perfil;
+        document.getElementById('p-credenciamento').checked = u.permissoes.includes('credenciamento');
+        document.getElementById('p-contratos').checked = u.permissoes.includes('contratos');
+        document.getElementById('p-avaliacao').checked = u.permissoes.includes('avaliacao');
+        document.getElementById('btn-admin-reset').style.display = 'inline-flex';
+        openModal('modal-usuario');
+      } catch { }
+    }
+
+    async function saveUser() {
+      const nome = document.getElementById('u-nome').value.trim();
+      const email = document.getElementById('u-email').value.trim();
+      const senha = document.getElementById('u-senha').value.trim();
+      const perfil = document.getElementById('u-perfil').value;
+      if (!nome || !email) return showToast('Nome e e-mail obrigatórios.', 'error');
+      if (!editingUserId && !senha) return showToast('Senha obrigatória para novo usuário.', 'error');
+
+      const permissoes = [];
+      if (document.getElementById('p-credenciamento').checked) permissoes.push('credenciamento');
+      if (document.getElementById('p-contratos').checked) permissoes.push('contratos');
+      if (document.getElementById('p-avaliacao').checked) permissoes.push('avaliacao');
+
+      try {
+        if (editingUserId) {
+          const body = { nome, email, perfil, permissoes };
+          if (senha) body.senha = senha;
+          await api('PUT', `/api/usuarios/${editingUserId}`, body);
+          showToast('Usuário atualizado.', 'success');
+        } else {
+          await api('POST', '/api/usuarios', { nome, email, senha, perfil, permissoes });
+          showToast('Usuário criado.', 'success');
+        }
+        closeModal('modal-usuario');
+        loadUsers();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function deleteUser(id) {
+      if (!confirm('Desativar este usuário?')) return;
+      try {
+        await api('DELETE', `/api/usuarios/${id}`);
+        showToast('Usuário desativado.');
+        loadUsers();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function adminResetSenha() {
+      if (!editingUserId) return;
+      if (!confirm('Redefinir a senha deste usuário para o seu e-mail?')) return;
+      try {
+        await api('POST', '/api/auth/admin-reset', { usuario_id: editingUserId });
+        showToast('Senha redefinida para o e-mail do usuário.', 'success');
+        closeModal('modal-usuario');
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    // ── MODAL ──
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+      o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+    });
+
+    // ── TOAST ──
+    let toastTimer;
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'show ' + type;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { t.className = ''; }, 3500);
+    }
+
+    function formatBytes(b) {
+      if (!b) return '—';
+      if (b < 1024) return b + ' B';
+      if (b < 1048576) return (b / 1024).toFixed(1) + ' KB';
+      return (b / 1048576).toFixed(1) + ' MB';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  LEILOEIROS
+    // ══════════════════════════════════════════════════
+    let leiloeirosData = [];
+    let editingLeiloeiro = null;
+
+    async function loadLeiloeiros() {
+      const busca = document.getElementById('busca-leiloeiro')?.value || '';
+      try {
+        const params = busca ? `?busca=${encodeURIComponent(busca)}` : '';
+        leiloeirosData = await api('GET', '/api/leiloeiros' + params);
+        renderLeiloeiros();
+      } catch { showToast('Erro ao carregar leiloeiros.', 'error'); }
+    }
+
+    function renderLeiloeiros() {
+      const tbody = document.getElementById('leiloeiros-tbody');
+      const empty = document.getElementById('leiloeiros-empty');
+      if (!leiloeirosData.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      const isAdmin = currentUser.perfil === 'admin';
+      tbody.innerHTML = leiloeirosData.map(l => `
+        <tr>
+          <td style="font-weight:500">${l.nome}</td>
+          <td class="mono" style="font-size:12px">${l.cpf || '—'}</td>
+          <td style="font-size:12px;color:var(--text-2)">${l.email || '—'}</td>
+          <td style="font-size:12px;color:var(--text-2)">${l.telefone || '—'}</td>
+          <td><span class="tag">${l.total_matriculas} matr.</span></td>
+          <td>
+            <button class="btn btn-ghost btn-sm" onclick="openEditLeiloeiro(${l.id})">
+              <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" fill="none" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </td>
+        </tr>`).join('');
+    }
+
+    function openNovoLeiloeiro() {
+      editingLeiloeiro = null;
+      document.getElementById('modal-leiloeiro-title').textContent = 'Novo Leiloeiro';
+      ['l-nome', 'l-cpf', 'l-email', 'l-telefone'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('matriculas-container').innerHTML = '';
+      addMatriculaRow(); // começa com uma linha vazia
+      openModal('modal-leiloeiro');
+    }
+
+    let originalMatriculaIds = []; // rastreia IDs carregados para detectar exclusões
+
+    async function openEditLeiloeiro(id) {
+      try {
+        const data = await api('GET', `/api/leiloeiros/${id}`);
+        editingLeiloeiro = data;
+        originalMatriculaIds = (data.matriculas || []).map(m => String(m.id)); // guarda IDs originais
+        document.getElementById('modal-leiloeiro-title').textContent = 'Editar Leiloeiro';
+        document.getElementById('l-nome').value = data.nome;
+        document.getElementById('l-cpf').value = data.cpf || '';
+        document.getElementById('l-email').value = data.email || '';
+        document.getElementById('l-telefone').value = data.telefone || '';
+        const cont = document.getElementById('matriculas-container');
+        cont.innerHTML = '';
+        (data.matriculas || []).forEach(m => addMatriculaRow(m));
+        openModal('modal-leiloeiro');
+      } catch { showToast('Erro ao carregar leiloeiro.', 'error'); }
+    }
+
+    function addMatriculaRow(m = null) {
+      const ufs = ['AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA', 'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO'];
+      const rowId = Date.now() + Math.random();
+      const div = document.createElement('div');
+      div.dataset.rowId = rowId;
+      if (m?.id) div.dataset.matriculaId = m.id; 
+      div.style.cssText = 'background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:12px;position:relative;margin-bottom:10px';
+      
+      div.innerHTML = `
+        <button onclick="this.closest('[data-row-id]').remove()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:var(--text-3);font-size:16px" title="Remover">&#x2715;</button>
+        
+        <!-- LINHA PRINCIPAL (SEMPRE VISIVEL) -->
+        <div style="display:grid;grid-template-columns:80px 1fr 1fr auto;gap:10px;align-items:flex-end">
+          <div class="field-group"><label>UF *</label>
+            <select class="m-uf">${ufs.map(u => `<option value="${u}" ${m?.uf === u ? 'selected' : ''}>${u}</option>`).join('')}</select>
+          </div>
+          <div class="field-group"><label>Nº Matrícula *</label><input class="m-num" type="text" placeholder="Ex: 12345" value="${m?.numero_matricula || ''}" /></div>
+          <div class="field-group"><label>Junta</label><input class="m-junta" type="text" placeholder="Ex: JUCESP" value="${m?.junta || ''}" /></div>
+          <div style="padding-bottom:2px">
+            <button type="button" class="m-toggle-btn" onclick="toggleMatricula('${rowId}')">
+              <span>Detalhes</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- CAMPOS EXPANDEIS -->
+        <div class="m-details" id="details-${rowId}">
+          <div style="display:grid;grid-template-columns:110px 1.5fr 70px 1fr;gap:10px;margin-bottom:8px">
+            <div class="field-group"><label>CEP</label><input class="m-cep" type="text" placeholder="00000-000" value="${m?.cep || ''}" /></div>
+            <div class="field-group"><label>Logradouro</label><input class="m-log" type="text" placeholder="Rua, Av..." value="${m?.logradouro || ''}" /></div>
+            <div class="field-group"><label>Nº</label><input class="m-numb" type="text" placeholder="123" value="${m?.numero || ''}" /></div>
+            <div class="field-group"><label>Complemento</label><input class="m-comp" type="text" placeholder="Sala" value="${m?.complemento || ''}" /></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 120px 1fr 140px;gap:10px">
+            <div class="field-group"><label>Cidade</label><input class="m-cid" type="text" placeholder="Cidade" value="${m?.cidade || ''}" /></div>
+            <div class="field-group"><label>Estado</label><input class="m-est" type="text" placeholder="Estado" value="${m?.estado || ''}" /></div>
+            <div class="field-group"><label>RG vinculado</label><input class="m-rg" type="text" placeholder="RG" value="${m?.rg || ''}" /></div>
+            <div class="field-group"><label>Expedição RG</label><input class="m-rg-exp" type="date" value="${m?.rg_data_expedicao || ''}" /></div>
+          </div>
+        </div>`;
+      document.getElementById('matriculas-container').appendChild(div);
+    }
+
+    function toggleMatricula(rowId) {
+      const details = document.getElementById(`details-${rowId}`);
+      const btn = details.previousElementSibling.querySelector('.m-toggle-btn');
+      const isActive = details.classList.toggle('active');
+      btn.classList.toggle('active', isActive);
+      btn.querySelector('span').textContent = isActive ? 'Recolher' : 'Detalhes';
+    }
+
+    async function saveLeiloeiro() {
+      const nome = document.getElementById('l-nome').value.trim();
+      if (!nome) return showToast('Nome obrigatório.', 'error');
+
+      const rows = document.querySelectorAll('#matriculas-container [data-row-id]');
+      const novas = [];
+      const existentes = [];
+      const idsNaTela = new Set();
+
+      rows.forEach(r => {
+        const num = r.querySelector('.m-num').value.trim();
+        if (!num) return;
+        const dados = {
+          uf: r.querySelector('.m-uf').value,
+          numero_matricula: num,
+          junta: r.querySelector('.m-junta').value.trim(),
+          logradouro: r.querySelector('.m-log').value.trim(),
+          numero: r.querySelector('.m-numb').value.trim(),
+          complemento: r.querySelector('.m-comp').value.trim(),
+          cidade: r.querySelector('.m-cid').value.trim(),
+          estado: r.querySelector('.m-est').value.trim(),
+          cep: r.querySelector('.m-cep').value.trim(),
+          rg: r.querySelector('.m-rg').value.trim(),
+          rg_data_expedicao: r.querySelector('.m-rg-exp').value,
+        };
+        if (r.dataset.matriculaId) {
+          idsNaTela.add(String(r.dataset.matriculaId));
+          existentes.push({ id: r.dataset.matriculaId, ...dados });
+        } else {
+          novas.push(dados);
+        }
+      });
+
+      // IDs que estavam no banco mas foram removidos da tela → DELETE
+      const removidas = originalMatriculaIds.filter(id => !idsNaTela.has(id));
+
+      const body = {
+        nome,
+        cpf: document.getElementById('l-cpf').value.trim(),
+        email: document.getElementById('l-email').value.trim(),
+        telefone: document.getElementById('l-telefone').value.trim(),
+        matriculas: novas
+      };
+
+      try {
+        if (editingLeiloeiro) {
+          await api('PUT', `/api/leiloeiros/${editingLeiloeiro.id}`, body);
+          // 1) Deleta as removidas da tela
+          for (const mid of removidas) {
+            await api('DELETE', `/api/leiloeiros/${editingLeiloeiro.id}/matriculas/${mid}`).catch(() => {});
+          }
+          // 2) Atualiza existentes
+          for (const m of existentes) {
+            await api('PUT', `/api/leiloeiros/${editingLeiloeiro.id}/matriculas/${m.id}`, m).catch(() => {});
+          }
+          // 3) Adiciona novas
+          for (const m of novas) {
+            await api('POST', `/api/leiloeiros/${editingLeiloeiro.id}/matriculas`, m).catch(() => {});
+          }
+        } else {
+          body.matriculas = [...novas, ...existentes];
+          await api('POST', '/api/leiloeiros', body);
+        }
+        showToast('Leiloeiro salvo com sucesso!', 'success');
+        closeModal('modal-leiloeiro');
+        loadLeiloeiros();
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    // ══════════════════════════════════════════════════
+    //  CONTRATOS
+    // ══════════════════════════════════════════════════
+    let contratosData = [];
+    let contratosActiveTab = 'upload';
+
+    function switchTabContrato(aba) {
+      if (contratosActiveTab === aba) return; // evita re-renders desnecessários
+      contratosActiveTab = aba;
+      document.getElementById('tab-btn-c-upload').className = aba === 'upload' ? 'tab active' : 'tab';
+      document.getElementById('tab-btn-c-lista').className = aba === 'lista' ? 'tab active' : 'tab';
+      document.getElementById('tab-c-upload').style.display = aba === 'upload' ? 'block' : 'none';
+      document.getElementById('tab-c-lista').style.display = aba === 'lista' ? 'block' : 'none';
+      if (aba === 'lista') loadContratos();
+      if (aba === 'upload') {
+          initFormContrato();
+          checkWebhookStatus();
+      }
+    }
+
+    async function loadContratos() {
+      const busca = document.getElementById('busca-contrato')?.value || '';
+      try {
+        const params = busca ? `?busca=${encodeURIComponent(busca)}` : '';
+        contratosData = await api('GET', '/api/contratos' + params);
+        renderContratos();
+        loadContratosStats();
+      } catch { showToast('Erro ao carregar contratos.', 'error'); }
+    }
+
+    async function loadContratosStats() {
+      try {
+        const s = await api('GET', '/api/contratos/stats/resumo');
+        document.getElementById('st-total').textContent = s.total;
+        document.getElementById('st-exec').textContent = s.em_execucao;
+        document.getElementById('st-enc').textContent = s.encerrado;
+        document.getElementById('st-sus').textContent = s.suspenso;
+      } catch { }
+    }
+
+    function statusContratoBadge(s) {
+      return { em_execucao: '<span class="status status-approved">Em Execução</span>', encerrado: '<span class="status" style="background:var(--surface-2);color:var(--text-3)">Encerrado</span>', suspenso: '<span class="status status-pending">Suspenso</span>' }[s] || `<span class="status">${s}</span>`;
+    }
+
+    function renderContratos() {
+      const tbody = document.getElementById('contratos-tbody');
+      const empty = document.getElementById('contratos-empty');
+      if (!contratosData.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+      empty.style.display = 'none';
+      tbody.innerHTML = contratosData.map(c => `
+        <tr onclick="viewContrato(${c.id})" style="cursor:pointer">
+          <td style="font-weight:500;font-size:12px">${c.edital_leiloeiro_ref || '—'}</td>
+          <td style="font-size:12px">${c.edital_numero ? `<span class="mono">${c.edital_numero}</span>` : '—'}</td>
+          <td>
+            ${c.titulo_contrato ? `<div style="font-weight:600;font-size:13px">${c.titulo_contrato}</div>` : ''}
+            <div style="font-size:11px;color:var(--text-3)">${c.leiloeiro_nome || '—'}</div>
+            ${c.observacoes ? `<div style="font-size:11px;color:var(--text-2);margin-top:2px;font-style:italic">Obs: ${c.observacoes}</div>` : ''}
+          </td>
+          <td style="font-size:12px">${c.matricula_uf ? `<span class="tag">${c.matricula_uf}</span> ${c.matricula_numero || ''}` : '—'}</td>
+          <td>${c.contrato_resumo ? '<span class="status status-approved">Processado</span>' : '<span class="status status-pending">Processando...</span>'}</td>
+          <td style="font-size:12px;color:var(--text-3)">${formatDateTime(c.criado_em)}</td>
+          <td style="display:flex;gap:4px">
+            <button class="btn btn-outline btn-sm" onclick="viewContrato(${c.id}); event.stopPropagation()">Ver</button>
+          </td>
+        </tr>`).join('');
+    }
+
+    async function initFormContrato(edital_id = null) {
+      document.getElementById('c-observacoes').value = '';
+      clearFileContrato();
+      
+      // Carregar editais aprovados
+      try {
+        const editais = await api('GET', '/api/editais?status=approved');
+        const sel = document.getElementById('c-edital');
+        sel.innerHTML = '<option value="">Sem edital vinculado (opcional)…</option>' +
+          editais.map(e => `<option value="${e.id}">${e.numero} — ${e.orgao}</option>`).join('');
+        if (edital_id && typeof edital_id !== 'object') sel.value = edital_id;
+      } catch (err) { 
+        console.error('Erro editais:', err); 
+      }
+
+      // Carregar leiloeiros
+      try {
+        const leis = await api('GET', '/api/leiloeiros');
+        const sel = document.getElementById('c-leiloeiro');
+        sel.innerHTML = '<option value="">Selecione…</option>' +
+          leis.map(l => `<option value="${l.id}">${l.nome}</option>`).join('');
+        document.getElementById('c-matricula').innerHTML = '<option value="">Selecione o leiloeiro primeiro…</option>';
+      } catch { }
+    }
+
+    async function loadMatriculasSelectContrato() {
+      const lid = document.getElementById('c-leiloeiro').value;
+      const sel = document.getElementById('c-matricula');
+      if (!lid) { sel.innerHTML = '<option value="">Selecione o leiloeiro primeiro…</option>'; return; }
+      try {
+        const mats = await api('GET', `/api/leiloeiros/${lid}/matriculas`);
+        sel.innerHTML = '<option value="">Selecione a matrícula…</option>' +
+          mats.map(m => `<option value="${m.id}">${m.uf} — Nº ${m.numero_matricula}${m.junta ? ' (' + m.junta + ')' : ''}</option>`).join('');
+      } catch { }
+    }
+
+    async function saveContrato() {
+      const form = new FormData();
+      const editalId = document.getElementById('c-edital').value;
+      if (editalId) form.append('edital_credenciamento_id', editalId);
+      
+      const obs = document.getElementById('c-observacoes').value.trim();
+      
+      if (!editalId && !obs) {
+        return showToast('Observação é obrigatória quando não há Edital vinculado.', 'error');
+      }
+
+      if (obs) form.append('observacoes', obs);
+      
+      const lid = document.getElementById('c-leiloeiro').value;
+      const mid = document.getElementById('c-matricula').value;
+      if (!lid || !mid) return showToast('Selecione Leiloeiro e Matrícula.', 'error');
+      
+      form.append('leiloeiro_id', lid);
+      form.append('matricula_id', mid);
+      
+      const arq = selectedFileContrato;
+      if (!arq) return showToast('Arquivo PDF é obrigatório.', 'error');
+      form.append('arquivo', arq);
+
+      try {
+        const btn = document.querySelector('#tab-c-upload .btn-solid');
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+        
+        // Enviando via fetch direto pois nosso helper 'api' pode estar zoando headers de form-data
+        const headers = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        
+        const res = await fetch(API + '/api/contratos', { method: 'POST', body: form, headers });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Erro na requisição');
+
+        showToast('Contrato enviado para IA!', 'success');
+        switchTabContrato('lista');
+        btn.disabled = false;
+        btn.textContent = 'Processar Contrato';
+        clearFileContrato();
+      } catch (e) { 
+        showToast(e.message, 'error'); 
+        const btn = document.querySelector('#tab-c-upload .btn-solid');
+        btn.disabled = false;
+        btn.textContent = 'Processar Contrato';
+      }
+    }
+
+    async function viewContrato(id) {
+      const c = contratosData.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('mvc-title').textContent = c.titulo_contrato || (c.edital_leiloeiro_ref ? `Contrato: ${c.edital_leiloeiro_ref}` : 'Contrato (Sem Título da IA)');
+      document.getElementById('mvc-sub').innerHTML = 
+        `Leiloeiro: <b>${c.leiloeiro_nome || 'N/A'}</b> | Matrícula: <b>${c.matricula_uf || ''} ${c.matricula_numero || ''}</b> ` +
+        (c.edital_numero ? ` | Edital Cred: <b>${c.edital_numero}</b>` : '');
+
+      let html = `
+        <div class="card" style="padding:16px;background:var(--surface-2);margin-bottom:12px">
+          <div style="font-weight:600;font-size:12px;text-transform:uppercase;color:var(--text-3);margin-bottom:10px">Dados de Controle</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <label style="display:block;font-size:11px;color:var(--text-2);margin-bottom:4px">Edital do Leilão (Ref)</label>
+              <input type="text" id="mvc-edital-ref" value="${c.edital_leiloeiro_ref || ''}" style="width:100%;padding:6px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg)" />
+            </div>
+            <div>
+              <label style="display:block;font-size:11px;color:var(--text-2);margin-bottom:4px">Observações / Anotações</label>
+              <textarea id="mvc-obs" style="width:100%;padding:6px;font-size:13px;border:1px solid var(--border);border-radius:var(--radius);min-height:50px;background:var(--bg)">${c.observacoes || ''}</textarea>
+            </div>
+            <div style="text-align:right"><button class="btn btn-outline btn-sm" onclick="updateContratoMeta(${c.id})">Salvar Dados de Controle</button></div>
+          </div>
+        </div>
+      `;
+
+      if (!c.contrato_resumo) {
+        html += `<div class="empty-state">
+            <span class="spinner spinner-dark" style="margin-bottom:10px"></span>
+            <p>A IA está processando este documento. Retorne em breve!</p>
+          </div>`;
+      } else {
+        html += `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;margin-top:10px">
+            <div style="font-weight:600;font-size:12px;text-transform:uppercase;color:var(--text-3)">Resumo do Contrato (IA)</div>
+            <button class="btn btn-outline btn-sm" onclick="copyContratoResumo()">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg> Copiar Resumo
+            </button>
+          </div>
+        `;
+        try {
+          const blocks = JSON.parse(c.contrato_resumo);
+          html += `<div id="contrato-resumo-content" style="display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;padding-right:8px">`;
+          blocks.forEach(b => {
+             html += `
+              <div class="card contrato-block-copy" style="padding:16px;background:var(--surface)">
+                <div style="font-weight:600;color:var(--text);margin-bottom:8px">${b.titulo || 'Seção'}</div>
+                <div style="font-size:13px;color:var(--text-2);line-height:1.5">${(b.texto || '').replace(/\n/g, '<br>')}</div>
+              </div>
+             `;
+          });
+          html += `</div>`;
+        } catch(e) {
+          html += `<div id="contrato-resumo-content" style="font-size:13px;white-space:pre-wrap;background:var(--surface);padding:16px;border-radius:var(--radius)">${c.contrato_resumo}</div>`;
+        }
+      }
+
+      document.getElementById('modal-view-contrato-body').innerHTML = html;
+      
+      // Apenas admin pode excluir contrato!
+      const btnDelete = document.getElementById('btn-delete-contrato');
+      if (btnDelete) {
+        btnDelete.style.display = (currentUser.perfil === 'admin') ? 'block' : 'none';
+        btnDelete.onclick = () => deleteContrato(c.id);
+      }
+
+      openModal('modal-view-contrato');
+    }
+
+    async function updateContratoMeta(id) {
+      const ref = document.getElementById('mvc-edital-ref').value.trim();
+      const obs = document.getElementById('mvc-obs').value.trim();
+      try {
+        await api('PUT', `/api/contratos/${id}`, { edital_leiloeiro_ref: ref, observacoes: obs });
+        showToast('Contrato atualizado.', 'success');
+        const c = contratosData.find(x => x.id === id);
+        if (c) { c.edital_leiloeiro_ref = ref; c.observacoes = obs; }
+        renderContratos();
+        const mainTitle = c.titulo_contrato || (c.edital_leiloeiro_ref ? `Contrato: ${c.edital_leiloeiro_ref}` : 'Contrato (Sem Título da IA)');
+        document.getElementById('mvc-title').textContent = mainTitle;
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function changeStatusContrato(id, status) {
+      try {
+        await api('PATCH', `/api/contratos/${id}/status`, { status });
+        const c = contratosData.find(x => x.id === id);
+        if (c) c.status = status;
+        renderContratos(); loadContratosStats();
+        showToast('Status atualizado.', 'success');
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    async function deleteContrato(id) {
+      if (!confirm('Excluir este contrato?')) return;
+      try {
+        await api('DELETE', `/api/contratos/${id}`);
+        contratosData = contratosData.filter(c => c.id !== id);
+        renderContratos(); loadContratosStats();
+        showToast('Contrato excluído.');
+      } catch (e) { showToast(e.message, 'error'); }
+    }
+
+    function copyContratoResumo() {
+      const container = document.getElementById('contrato-resumo-content');
+      if (!container) return;
+      
+      let textToCopy = '';
+      const blocks = container.querySelectorAll('.contrato-block-copy');
+      
+      if (blocks.length > 0) {
+        // Formato Array de JSON
+        blocks.forEach(b => {
+          const tit = b.querySelector('div:nth-child(1)').innerText;
+          const txt = b.querySelector('div:nth-child(2)').innerText;
+          textToCopy += `**${tit}**\n${txt}\n\n`;
+        });
+      } else {
+        // Formato Texto Puro
+        textToCopy = container.innerText;
+      }
+      
+      textToCopy = textToCopy.trim();
+      if (!textToCopy) return;
+      
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast('Resumo copiado para a área de transferência!', 'success');
+      }).catch(err => {
+        showToast('Erro ao copiar erro.', 'error');
+        console.error(err);
+      });
+    }
+
+    // ══════════════════════════════════════════════════
+    //  RECUPERAÇÃO DE SENHA
+    // ══════════════════════════════════════════════════
+    function showResetScreen() {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('reset-screen').style.display = 'flex';
+      document.getElementById('reset-step1').style.display = 'block';
+      document.getElementById('reset-step2').style.display = 'none';
+      document.getElementById('reset-step-label').textContent = 'Passo 1: Solicitar código';
+      document.getElementById('reset-msg').style.display = 'none';
+      document.getElementById('reset-email').value = '';
+    }
+
+    function hideResetScreen() {
+      document.getElementById('reset-screen').style.display = 'none';
+      document.getElementById('auth-screen').style.display = 'flex';
+    }
+
+    async function requestReset() {
+      const email = document.getElementById('reset-email').value.trim();
+      if (!email) { showResetMsg('Informe seu e-mail.', true); return; }
+      try {
+        const r = await api('POST', '/api/auth/reset-request', { email });
+        document.getElementById('reset-step1').style.display = 'none';
+        document.getElementById('reset-step2').style.display = 'block';
+        document.getElementById('reset-step-label').textContent = 'Passo 2: Inserir código';
+        // Se o servidor retornou codigo_admin (dev mode), mostra para facilitar
+        if (r.codigo_admin) {
+          showResetMsg(`Código gerado pelo sistema: ${r.codigo_admin} (copie e use abaixo)`, false);
+        }
+      } catch (e) { showResetMsg(e.message, true); }
+    }
+
+    async function confirmReset() {
+      const email = document.getElementById('reset-email').value.trim();
+      const codigo = document.getElementById('reset-code').value.trim();
+      const nova_senha = document.getElementById('reset-newpass').value;
+      if (!codigo || !nova_senha) { showResetMsg('Preencha o código e a nova senha.', true); return; }
+      try {
+        await api('POST', '/api/auth/reset-confirm', { email, codigo, nova_senha });
+        hideResetScreen();
+        showToast('Senha alterada com sucesso! Faça login.', 'success');
+      } catch (e) { showResetMsg(e.message, true); }
+    }
+
+    function showResetMsg(msg, isError) {
+      const el = document.getElementById('reset-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      el.style.background = isError ? 'var(--red-bg)' : 'var(--green-bg)';
+      el.style.borderColor = isError ? '#f5c6c2' : '#c6e8d8';
+      el.style.color = isError ? 'var(--red)' : 'var(--green)';
+    }
+
+    // ══════════════════════════════════════════════════
+    //  BOOT
+    // ══════════════════════════════════════════════════
+    (async () => {
+      if (await tryAutoLogin()) initApp();
+    })();
+  </script>
+</body>
+
+</html>

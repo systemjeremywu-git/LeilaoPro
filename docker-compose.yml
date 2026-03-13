@@ -29,6 +29,7 @@ services:
         - "traefik.http.routers.leilaopro-api.entrypoints=websecure"
         - "traefik.http.routers.leilaopro-api.tls=true"
         - "traefik.http.routers.leilaopro-api.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.leilaopro-api.priority=100"
         - "traefik.http.services.leilaopro-api.loadbalancer.server.port=3000"
 
   frontend:
@@ -47,6 +48,13 @@ services:
         - "traefik.http.routers.leilaopro.tls=true"
         - "traefik.http.routers.leilaopro.tls.certresolver=letsencryptresolver"
         - "traefik.http.services.leilaopro.loadbalancer.server.port=80"
+        # BLOQUEIO DE ARQUIVOS SENSÍVEIS (.env, .git, .docker)
+        - "traefik.http.routers.leilaopro-block.rule=Host(`leilaopro.hubkron.uk`) && (PathPrefix(`/.env`) || PathPrefix(`/.git`) || PathPrefix(`/.docker`))"
+        - "traefik.http.routers.leilaopro-block.entrypoints=websecure"
+        - "traefik.http.routers.leilaopro-block.tls=true"
+        - "traefik.http.routers.leilaopro-block.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.leilaopro-block.priority=200"
+        - "traefik.http.routers.leilaopro-block.service=noop@internal"
 
 networks:
   hubkron:

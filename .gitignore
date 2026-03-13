@@ -7,6 +7,7 @@ yarn-error.log*
 # Database
 backend/db/*.sqlite
 backend/db/*.sqlite-journal
+backend/data/
 
 # Environment
 .env

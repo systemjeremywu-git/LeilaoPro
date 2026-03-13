@@ -30,9 +30,9 @@ services:
         - "traefik.enable=true"
         - "traefik.docker.network=hubkron"
         - "traefik.http.routers.leilaopro.rule=Host(`leilaopro.hubkron.uk`)"
-        - "traefik.http.routers.leilaopro.entrypoints=websecure"
+        - "traefik.http.routers.leilaopro.entrypoints=web,websecure"
         - "traefik.http.routers.leilaopro.tls=true"
-        - "traefik.http.routers.leilaopro.tls.certresolver=letsencrypt" # Altere se seu resolver tiver outro nome
+        - "traefik.http.routers.leilaopro.tls.certresolver=letsencrypt"
         - "traefik.http.services.leilaopro.loadbalancer.server.port=80"
 
 networks:

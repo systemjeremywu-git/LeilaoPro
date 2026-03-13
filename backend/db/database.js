@@ -116,13 +116,13 @@ db.exec(`
 `);
 
 // ── SEED: cria admin padrão se não existir ──
-const adminExiste = db.prepare('SELECT id FROM usuarios WHERE email = ?').get('admin@leilaopro.com');
+const adminExiste = db.prepare('SELECT id FROM usuarios WHERE email = ?').get('admin@leilaopro.com.br');
 if (!adminExiste) {
   const hash = bcrypt.hashSync('admin123', 10);
   db.prepare(`
     INSERT INTO usuarios (nome, email, senha_hash, perfil, permissoes)
     VALUES (?, ?, ?, 'admin', 'credenciamento,contratos,leiloeiros,avaliacao')
-  `).run('Administrador', 'admin@leilaopro.com', hash);
+  `).run('Administrador', 'admin@leilaopro.com.br', hash);
 
   const hash2 = bcrypt.hashSync('123456', 10);
   db.prepare(`

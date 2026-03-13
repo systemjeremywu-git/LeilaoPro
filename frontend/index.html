@@ -1952,7 +1952,7 @@
       const actions = document.getElementById('topbar-actions');
       actions.innerHTML = '';
       if (page === 'credenciamento') {
-        actions.innerHTML = `<span style="font-size:12px;color:var(--text-3)">Olá, ${currentUser.nome.split(' ')[0]}</span>`;
+        actions.innerHTML = `<div style="text-align: right; line-height: 1.2;"><span style="font-size:12px;color:var(--text-3)">Olá, ${currentUser.nome.split(' ')[0]}</span><br><span style="font-size:10px;color:var(--text-3);opacity:0.6">v1.0.0</span></div>`;
         loadStats();
         // Abre na aba Lista de Editais por padrao
         if (activeTab !== 'lista') switchTab('lista');

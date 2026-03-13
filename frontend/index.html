@@ -264,6 +264,12 @@
       color: var(--text)
     }
 
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .nav-item.active {
       background: var(--accent-light);
       color: var(--text);
@@ -363,12 +369,6 @@
       font-size: 12px;
       color: var(--text-3);
       margin-top: 1px
-    }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px
     }
 
     .content {
@@ -1250,7 +1250,10 @@
           <div class="topbar-title" id="page-title">Credenciamento</div>
           <div class="topbar-sub" id="page-sub">Análise e gestão de editais</div>
         </div>
-        <div class="topbar-actions" id="topbar-actions"></div>
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="topbar-actions" id="topbar-actions-dynamic"></div>
+          <div id="topbar-profile-persistent" style="border-left: 1px solid var(--border); padding-left: 20px;"></div>
+        </div>
       </header>
       <div class="content">
 
@@ -1893,6 +1896,7 @@
       document.getElementById('sidebar-avatar').textContent = initials(currentUser.nome);
       if (currentUser.perfil === 'admin') document.getElementById('nav-admin-section').style.display = 'block';
       applyNavPermissions();
+      updateTopbarProfile();
       navigate('credenciamento');
       // Polling para atualizar a lista e webhooks
       pollingInterval = setInterval(() => { 
@@ -1903,6 +1907,17 @@
 
     function profileLabel(p) { return { admin: 'Administrador', gestor: 'Gestor', analista: 'Analista' }[p] || p; }
     function initials(n) { return n.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase(); }
+
+    function updateTopbarProfile() {
+      const el = document.getElementById('topbar-profile-persistent');
+      if (!el || !currentUser) return;
+      el.innerHTML = `
+        <div style="text-align: right; line-height: 1.2;">
+          <span style="font-size:12px;color:var(--text-3)">Olá, ${currentUser.nome.split(' ')[0]}</span><br>
+          <span style="font-size:10px;color:var(--text-3);opacity:0.6">v1.0.0</span>
+        </div>
+      `;
+    }
 
     function applyNavPermissions() {
       const perms = currentUser.permissoes;
@@ -1949,10 +1964,9 @@
       document.getElementById('page-title').textContent = meta.title || page;
       document.getElementById('page-sub').textContent = meta.sub || '';
 
-      const actions = document.getElementById('topbar-actions');
+      const actions = document.getElementById('topbar-actions-dynamic');
       actions.innerHTML = '';
       if (page === 'credenciamento') {
-        actions.innerHTML = `<div style="text-align: right; line-height: 1.2;"><span style="font-size:12px;color:var(--text-3)">Olá, ${currentUser.nome.split(' ')[0]}</span><br><span style="font-size:10px;color:var(--text-3);opacity:0.6">v1.0.0</span></div>`;
         loadStats();
         // Abre na aba Lista de Editais por padrao
         if (activeTab !== 'lista') switchTab('lista');
@@ -1962,7 +1976,10 @@
         actions.innerHTML = `<button class="btn btn-solid btn-sm" onclick="openNewUser()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Usuário</button>`;
         loadUsers();
       }
-      if (page === 'leiloeiros') loadLeiloeiros();
+      if (page === 'leiloeiros') {
+        actions.innerHTML = `<button class="btn btn-solid btn-sm" onclick="openNewLeiloeiro()"><svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo Leiloeiro</button>`;
+        loadLeiloeiros();
+      }
       if (page === 'contratos') {
         // Abre na aba Contratos Criados por padrao
         if (contratosActiveTab !== 'lista') {

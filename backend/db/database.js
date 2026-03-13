@@ -126,12 +126,12 @@ if (!adminExiste) {
 
   const hash2 = bcrypt.hashSync('123456', 10);
   db.prepare(`
-    INSERT INTO usuarios (nome, email, senha_hash, perfil, permissoes)
+    INSERT OR IGNORE INTO usuarios (nome, email, senha_hash, perfil, permissoes)
     VALUES (?, ?, ?, 'analista', 'credenciamento,contratos,avaliacao')
   `).run('Ana Analista', 'ana@leilaopro.com', hash2);
 
   db.prepare(`
-    INSERT INTO usuarios (nome, email, senha_hash, perfil, permissoes)
+    INSERT OR IGNORE INTO usuarios (nome, email, senha_hash, perfil, permissoes)
     VALUES (?, ?, ?, 'gestor', 'credenciamento,contratos,avaliacao')
   `).run('Carlos Gestor', 'carlos@leilaopro.com', hash2);
 

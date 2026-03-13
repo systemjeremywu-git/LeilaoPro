@@ -6,8 +6,12 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - JWT_SECRET=${JWT_SECRET:-troque_isso_no_portainer}
+      - N8N_SECRET=${N8N_SECRET:-015fb2f562210beda601c64678b107f340f53a12bcf6556a331e0638a8326c44}
+      - N8N_WEBHOOK_EDITAL_URL=${N8N_WEBHOOK_EDITAL_URL:-}
+      - N8N_WEBHOOK_CONTRATO_URL=${N8N_WEBHOOK_CONTRATO_URL:-}
     volumes:
-      - leilaopro_db:/app/db
+      - leilaopro_db:/app/data
       - leilaopro_uploads:/app/uploads
     networks:
       - leilaopro_network

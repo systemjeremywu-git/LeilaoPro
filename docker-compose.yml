@@ -21,6 +21,15 @@ services:
       placement:
         constraints:
           - node.role == manager
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=hubkron"
+        # ROTEAMENTO DA API
+        - "traefik.http.routers.leilaopro-api.rule=Host(`leilaopro.hubkron.uk`) && PathPrefix(`/api`)"
+        - "traefik.http.routers.leilaopro-api.entrypoints=websecure"
+        - "traefik.http.routers.leilaopro-api.tls=true"
+        - "traefik.http.routers.leilaopro-api.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.leilaopro-api.loadbalancer.server.port=3000"
 
   frontend:
     image: ghcr.io/systemjeremywu-git/leilaopro-frontend:latest
@@ -32,6 +41,7 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=hubkron"
+        # ROTEAMENTO DO FRONTEND
         - "traefik.http.routers.leilaopro.rule=Host(`leilaopro.hubkron.uk`)"
         - "traefik.http.routers.leilaopro.entrypoints=websecure"
         - "traefik.http.routers.leilaopro.tls=true"

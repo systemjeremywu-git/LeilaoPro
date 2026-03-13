@@ -29,12 +29,12 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=hubkron"
-        - "traefik.http.routers.leilaopro.rule=Host(`leilaopro.hubkron.uk`)"
-        - "traefik.http.routers.leilaopro.entrypoints=web,websecure"
-        - "traefik.http.routers.leilaopro.service=leilaopro"
-        - "traefik.http.routers.leilaopro.tls=true"
-        - "traefik.http.routers.leilaopro.tls.certresolver=letsencryptresolver"
-        - "traefik.http.services.leilaopro.loadbalancer.server.port=80"
+        - "traefik.http.routers.leilaopro-router.rule=Host(`leilaopro.hubkron.uk`)"
+        - "traefik.http.routers.leilaopro-router.entrypoints=websecure"
+        - "traefik.http.routers.leilaopro-router.tls=true"
+        - "traefik.http.routers.leilaopro-router.tls.certresolver=letsencryptresolver"
+        - "traefik.http.routers.leilaopro-router.service=leilaopro-service"
+        - "traefik.http.services.leilaopro-service.loadbalancer.server.port=80"
 
 networks:
   leilaopro_network:

@@ -28,3 +28,4 @@ Consulte o arquivo [VERSIONING.md](./VERSIONING.md) para detalhes sobre o fluxo 
 
 ---
 © 2026 Hubkron.
+trigger docker build

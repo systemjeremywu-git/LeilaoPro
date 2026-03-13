@@ -33,7 +33,7 @@ services:
         - "traefik.http.routers.leilaopro.entrypoints=web,websecure"
         - "traefik.http.routers.leilaopro.service=leilaopro"
         - "traefik.http.routers.leilaopro.tls=true"
-        - "traefik.http.routers.leilaopro.tls.certresolver=letsencrypt"
+        - "traefik.http.routers.leilaopro.tls.certresolver=letsencryptresolver"
         - "traefik.http.services.leilaopro.loadbalancer.server.port=80"
 
 networks:

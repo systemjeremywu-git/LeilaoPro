@@ -14,7 +14,7 @@ services:
       - leilaopro_db:/app/data
       - leilaopro_uploads:/app/uploads
     networks:
-      - leilaopro_network
+      - hubkron
     deploy:
       restart_policy:
         condition: on-failure
@@ -25,7 +25,6 @@ services:
   frontend:
     image: ghcr.io/systemjeremywu-git/leilaopro-frontend:latest
     networks:
-      - leilaopro_network
       - hubkron
     deploy:
       restart_policy:
@@ -33,18 +32,13 @@ services:
       labels:
         - "traefik.enable=true"
         - "traefik.docker.network=hubkron"
-        - "traefik.http.routers.leilaopro-router.rule=Host(`leilaopro.hubkron.uk`)"
-        - "traefik.http.routers.leilaopro-router.entrypoints=websecure"
-        - "traefik.http.routers.leilaopro-router.tls=true"
-        - "traefik.http.routers.leilaopro-router.tls.certresolver=letsencryptresolver"
-        - "traefik.http.routers.leilaopro-router.service=leilaopro-service"
-        - "traefik.http.services.leilaopro-service.loadbalancer.server.port=80"
+        - "traefik.http.routers.leilaopro.rule=Host(`leilaopro.hubkron.uk`)"
+        - "traefik.http.routers.leilaopro.entrypoints=websecure"
+        - "traefik.http.routers.leilaopro.tls=true"
+        - "traefik.http.routers.leilaopro.tls.certresolver=letsencryptresolver"
+        - "traefik.http.services.leilaopro.loadbalancer.server.port=80"
 
 networks:
-  leilaopro_network:
-    name: leilaopro_overlay
-    driver: overlay
-    attachable: true
   hubkron:
     external: true
 

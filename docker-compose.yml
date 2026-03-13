@@ -30,7 +30,9 @@ services:
 
 networks:
   leilaopro_network:
+    name: leilaopro_overlay
     driver: overlay
+    attachable: true
 
 volumes:
   leilaopro_db:

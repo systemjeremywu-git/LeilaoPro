@@ -20,19 +20,28 @@ services:
 
   frontend:
     image: ghcr.io/systemjeremywu-git/leilaopro-frontend:latest
-    ports:
-      - "80:80"
     networks:
       - leilaopro_network
+      - hubkron
     deploy:
       restart_policy:
         condition: on-failure
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=hubkron"
+        - "traefik.http.routers.leilaopro.rule=Host(`leilaopro.hubkron.uk`)"
+        - "traefik.http.routers.leilaopro.entrypoints=websecure"
+        - "traefik.http.routers.leilaopro.tls=true"
+        - "traefik.http.routers.leilaopro.tls.certresolver=letsencrypt" # Altere se seu resolver tiver outro nome
+        - "traefik.http.services.leilaopro.loadbalancer.server.port=80"
 
 networks:
   leilaopro_network:
     name: leilaopro_overlay
     driver: overlay
     attachable: true
+  hubkron:
+    external: true
 
 volumes:
   leilaopro_db:
